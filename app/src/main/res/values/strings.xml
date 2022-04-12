@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">The-Road-Trip</string>
+    <string name="Heading">Best Social App To Make New Friends</string>
+    <string name="description">Find People With The Same Interest As You</string>
+    <string name="login">Log in</string>
+    <string name="register">Register</string>
+    <string name="name">The Road Trip</string>
+    <string name="edit_fullName">Your Full Name</string>
+    <string name="edit_email">Your Email</string>
+    <string name="edit_password">Your Password</string>
+    <string name="edit_conform_password">Conform Password</string>
+    <string name="submit">Submit</string>
+    <string name="search">Search</string>
+    <string name="err_email">Email is invalid, please enter a email again</string>
+    <string name="err_password_length">Password must be at least 8 characters </string>
+    <string name="err_conform_password">Conform password does not match password </string>
+    <string name="error_check_email">Email is existing, please choose a different email </string>
+    <string name="error_full_name">Full Name is empty, please enter your full name </string>
+    <string name="add_story">Add Story </string>
+    <string name="hello">Hello</string>
+    <string name="todo">TODO</string>
+    <string name="settings">Settings</string>
+    <string name="your_featured_stories">Your Featured Stories</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
