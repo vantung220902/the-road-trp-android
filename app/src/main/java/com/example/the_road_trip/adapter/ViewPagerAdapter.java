@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.the_road_trip.fragment.ConversationsFragment;
+import com.example.the_road_trip.fragment.SearchFragment;
 import com.example.the_road_trip.fragment.CreatePostFragment;
 import com.example.the_road_trip.fragment.DiscoverFragment;
 import com.example.the_road_trip.fragment.ProfileFragment;
@@ -27,7 +27,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case 2:
                 return new CreatePostFragment();
             case 3:
-                return new ConversationsFragment();
+                return new SearchFragment();
             case 4:
                 return  new ProfileFragment();
 

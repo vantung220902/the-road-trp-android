@@ -133,7 +133,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     public void loadPosts() {
-        APIPost.apiPOST.gets().enqueue(new Callback<ResponsePost>() {
+        APIPost.apiPOST.gets("", 0).enqueue(new Callback<ResponsePost>() {
             @Override
             public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                 try {

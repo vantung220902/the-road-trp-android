@@ -54,7 +54,7 @@ public interface APIPost {
     }
 
     APIPost apiPOST = new Retrofit.Builder()
-            .baseUrl("http://192.168.1.2:4000/api/post/")
+            .baseUrl("http://192.168.1.6:4000/api/post/")
             .client(getHeader(DataLocalManager.getAccessToken()))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -64,10 +64,11 @@ public interface APIPost {
     @POST("create")
     Call<ResponseData> insertPost(@Part(Constant.KEY_TITLE) RequestBody title,
                                   @Part MultipartBody.Part image);
+
     @GET("gets")
-    Call<ResponsePost> gets();
+    Call<ResponsePost> gets(@Query("query") String query, @Query("paging") int paging);
 
     @GET("getById")
-    Call<ResponsePost> getById(@Query("_userID")String _userID);
+    Call<ResponsePost> getById(@Query("_userId") String _userID);
 
 }

@@ -30,9 +30,6 @@
             android:name=".activity.auth.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SearchActivity"
-            android:exported="false" />
-        <activity
             android:name=".activity.auth.RegisterActivity"
             android:exported="false" />
         <activity

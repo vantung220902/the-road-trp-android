@@ -52,7 +52,7 @@ public interface APIStory {
     }
 
     APIStory apiStory = new Retrofit.Builder()
-            .baseUrl("http://192.168.1.2:4000/api/story/")
+            .baseUrl("http://192.168.1.6:4000/api/story/")
             .client(getHeader(DataLocalManager.getAccessToken()))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
