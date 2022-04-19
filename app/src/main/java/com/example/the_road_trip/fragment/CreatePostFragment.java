@@ -62,6 +62,7 @@ public class CreatePostFragment extends Fragment {
     public interface IUpdatePosts {
         void updateData();
     }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);

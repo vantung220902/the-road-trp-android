@@ -20,14 +20,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.the_road_trip.R;
+import com.example.the_road_trip.activity.MainActivity;
 import com.example.the_road_trip.activity.story.CreateStoryActivity;
 import com.example.the_road_trip.activity.story.DetailStoryActivity;
+import com.example.the_road_trip.adapter.CommentAdapter;
 import com.example.the_road_trip.adapter.PostAdapter;
 import com.example.the_road_trip.adapter.StoryAdapter;
 import com.example.the_road_trip.animation.ExpandedCollapse;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.api.APIStory;
+import com.example.the_road_trip.api.ApiComments;
+import com.example.the_road_trip.bottomsheet.BottomSheetComment;
+import com.example.the_road_trip.interfaces.IClickPostComment;
 import com.example.the_road_trip.interfaces.IClickStory;
+import com.example.the_road_trip.model.Comment.Comment;
+import com.example.the_road_trip.model.Comment.ResponseComment;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
 import com.example.the_road_trip.model.Story.ResponseStory;
@@ -38,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -51,6 +59,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
     private StoryAdapter storyAdapter;
     private List<Post> listPost;
     private List<Story> listStory;
+    private List<Comment> listComments;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout containerStory, headingDiscovery;
     private TextView tvLogo, tvName;
@@ -64,7 +73,12 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         initUI(view);
         tvName.setText(DataLocalManager.getUserCurrent().getFullName());
         swipeRefreshLayout.setOnRefreshListener(this);
-        postAdapter = new PostAdapter(listPost, getContext());
+        postAdapter = new PostAdapter(listPost, getContext(), new IClickPostComment() {
+            @Override
+            public void clickComment(String postId) {
+                loadComments(postId);
+            }
+        });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewPost.setLayoutManager(linearLayoutManager);
         recyclerViewPost.setAdapter(postAdapter);
@@ -117,6 +131,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
             Intent intent = new Intent(getActivity(), CreateStoryActivity.class);
             startActivity(intent);
         });
+
         return view;
 
     }
@@ -192,6 +207,36 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
     }
 
+    public void loadComments(String postId) {
+        ApiComments.apiComment.gets(postId).enqueue(new Callback<ResponseComment>() {
+            @Override
+            public void onResponse(Call<ResponseComment> call, Response<ResponseComment> response) {
+                try {
+                    if (response.code() == 200) {
+                        listComments = response.body().getData();
+                        clickOpenBottomSheetFragment(listComments,postId);
+                    } else {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response.errorBody().string());
+                            String internalMessage = jsonObject.getString("message");
+                            Toast.makeText(getContext(), internalMessage, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseComment> call, Throwable t) {
+                Log.d("Error Call Api", t.getMessage());
+            }
+        });
+    }
+
     @Override
     public void onRefresh() {
         loadPosts();
@@ -207,4 +252,8 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         }, 2000);
     }
 
+    private void clickOpenBottomSheetFragment(List<Comment> list,String postId) {
+        BottomSheetComment bottomSheetComment = new BottomSheetComment(list,postId);
+        bottomSheetComment.show(getActivity().getSupportFragmentManager(), bottomSheetComment.getTag());
+    }
 }

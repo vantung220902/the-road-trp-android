@@ -1,5 +1,7 @@
 package com.example.the_road_trip.api;
 
+import static com.example.the_road_trip.api.Constant.URL_SERVER;
+
 import com.example.the_road_trip.model.ResponseData;
 import com.example.the_road_trip.model.User.RefreshToken;
 import com.example.the_road_trip.model.User.User;
@@ -15,11 +17,11 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ApiAuth {
-//localhost:4000/api/user/
-Gson gson = new GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss").create();
+    //localhost:4000/api/user/
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss").create();
 
-    ApiAuth apiAuth =new Retrofit.Builder()
-            .baseUrl("http://192.168.1.6:4000/api/user/")
+    ApiAuth apiAuth = new Retrofit.Builder()
+            .baseUrl(URL_SERVER + "/api/user/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build().create(ApiAuth.class);
 

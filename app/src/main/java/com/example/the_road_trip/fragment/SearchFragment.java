@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,12 +45,33 @@ public class SearchFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         initUI(view);
-        profilePostAdapter = new ProfilePostAdapter(getContext(),listPost);
+        profilePostAdapter = new ProfilePostAdapter(getContext(), listPost);
         StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rcvResult.setLayoutManager(staggeredGridLayoutManager);
         rcvResult.setAdapter(profilePostAdapter);
-        loadPosts();
+        loadPosts("", 0);
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadPosts(editable.toString(),0);
+                    }
+                }, 1000);
+            }
+        });
         return view;
     }
 
@@ -57,8 +81,8 @@ public class SearchFragment extends Fragment {
         materialButton = view.findViewById(R.id.btn_see_more_search);
     }
 
-    public void loadPosts() {
-        APIPost.apiPOST.gets("", 0).enqueue(new Callback<ResponsePost>() {
+    public void loadPosts(String query, int paging) {
+        APIPost.apiPOST.gets(query, paging).enqueue(new Callback<ResponsePost>() {
             @Override
             public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                 try {

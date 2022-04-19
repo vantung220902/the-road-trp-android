@@ -1,5 +1,6 @@
 package com.example.the_road_trip.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,13 +11,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
+import com.example.the_road_trip.activity.FirstInstallActivity;
+import com.example.the_road_trip.activity.MainActivity;
+import com.example.the_road_trip.activity.SplashActivity;
 import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.api.APIPost;
+import com.example.the_road_trip.model.ModelLink;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
@@ -37,19 +43,32 @@ public class ProfileFragment extends Fragment {
     private List<Post> listPost;
     private CircleImageView avatar;
     private TextView txtName, txtAddress;
-
+private ImageButton btnLogout;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         initUI(view);
         setInfo();
-        postAdapter = new ProfilePostAdapter(getContext(),listPost);
+        postAdapter = new ProfilePostAdapter(getContext(), listPost);
         StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rcvPots.setLayoutManager(staggeredGridLayoutManager);
         rcvPots.setAdapter(postAdapter);
         loadPosts();
+        btnLogout.setOnClickListener(view1 -> {
+            DataLocalManager.setRefreshToken("");
+            DataLocalManager.setAccessToken("");
+            DataLocalManager.setUserCurrent(null);
+            Intent intent = new Intent(getContext(), SplashActivity.class);
+            Bundle bundle = new Bundle();
+            ModelLink modelLink = new ModelLink(null, FirstInstallActivity.class);
+            bundle.putSerializable("screen_next", modelLink);
+            intent.putExtras(bundle);
+            startActivity(intent);
+            getActivity().finish();
+
+        });
         return view;
     }
 
@@ -58,6 +77,7 @@ public class ProfileFragment extends Fragment {
         avatar = view.findViewById(R.id.profile_avatar);
         txtAddress = view.findViewById(R.id.profile_address);
         txtName = view.findViewById(R.id.profile_name);
+        btnLogout = view.findViewById(R.id.logout_profile);
     }
 
     private void setInfo() {

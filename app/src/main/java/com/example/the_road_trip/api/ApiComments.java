@@ -4,30 +4,30 @@ import static com.example.the_road_trip.api.Constant.URL_SERVER;
 
 import android.util.Log;
 
-import com.example.the_road_trip.model.Post.ResponsePost;
-import com.example.the_road_trip.model.ResponseData;
+import com.example.the_road_trip.model.Comment.Comment;
+import com.example.the_road_trip.model.Comment.ResponseComment;
+import com.example.the_road_trip.model.Comment.ResponseInsertComment;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
-
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Query;
 
-public interface APIPost {
-    //localhost:4000/api/post/
+public interface ApiComments {
+    //localhost:4000/api/comment/
     Gson gson = new GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss").create();
 
     static OkHttpClient getHeader(final String authorizationValue) {
@@ -55,22 +55,16 @@ public interface APIPost {
 
     }
 
-    APIPost apiPOST = new Retrofit.Builder()
-            .baseUrl(URL_SERVER+"/api/post/")
+    ApiComments apiComment = new Retrofit.Builder()
+            .baseUrl(URL_SERVER + "/api/comments/")
             .client(getHeader(DataLocalManager.getAccessToken()))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
-            .create(APIPost.class);
+            .create(ApiComments.class);
 
-    @Multipart
     @POST("create")
-    Call<ResponseData> insertPost(@Part(Constant.KEY_TITLE) RequestBody title,
-                                  @Part MultipartBody.Part image);
+    Call<ResponseInsertComment> insertComment(@Body Comment comment);
 
     @GET("gets")
-    Call<ResponsePost> gets(@Query("query") String query, @Query("paging") int paging);
-
-    @GET("getById")
-    Call<ResponsePost> getById(@Query("_userId") String _userID);
-
+    Call<ResponseComment> gets(@Query("postId")String postId);
 }

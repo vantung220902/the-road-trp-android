@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
+import com.example.the_road_trip.interfaces.IClickPostComment;
 import com.example.the_road_trip.model.Post.Post;
 
 import java.util.List;
@@ -21,12 +23,11 @@ import java.util.TimeZone;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private List<Post> list;
     private Context context;
-
-
-    public PostAdapter(List<Post> list, Context context) {
+    private IClickPostComment iClickPostComment;
+    public PostAdapter(List<Post> list, Context context, IClickPostComment iClickPostComment) {
         this.list = list;
         this.context = context;
-
+        this.iClickPostComment = iClickPostComment;
     }
 
     public void setData(List<Post> list) {
@@ -58,7 +59,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         String strTime = day == post.getTime_created() ? "Today" : day - post.getTime_created() + " ago";
         holder.txtTime.setText(strTime);
         holder.tvTitle.setText(post.getTitle());
-
+        holder.btnComment.setOnClickListener(view -> {
+            iClickPostComment.clickComment(post.get_id());
+        });
     }
 
     @Override
@@ -67,15 +70,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imagePost, imageAuthor, imageHeart, imageComment;
+        private ImageView imagePost, imageAuthor, imageHeart;
         private TextView txtName, txtTime, tvTitle;
-
+        private ImageButton btnComment;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imagePost = itemView.findViewById(R.id.img_post_item);
             imageAuthor = itemView.findViewById(R.id.image_author_post);
             imageHeart = itemView.findViewById(R.id.heart_post);
-            imageComment = itemView.findViewById(R.id.comment_post);
+            btnComment = itemView.findViewById(R.id.comment_post);
             txtName = itemView.findViewById(R.id.name_author_post);
             txtTime = itemView.findViewById(R.id.time_create_post);
             tvTitle = itemView.findViewById(R.id.post_title);

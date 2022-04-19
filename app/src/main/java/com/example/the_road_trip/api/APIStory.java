@@ -1,4 +1,7 @@
 package com.example.the_road_trip.api;
+
+import static com.example.the_road_trip.api.Constant.URL_SERVER;
+
 import android.util.Log;
 
 import com.example.the_road_trip.model.Post.ResponsePost;
@@ -26,6 +29,7 @@ import retrofit2.http.Part;
 public interface APIStory {
     //localhost:4000/api/story/
     Gson gson = new GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss").create();
+
     static OkHttpClient getHeader(final String authorizationValue) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -52,7 +56,7 @@ public interface APIStory {
     }
 
     APIStory apiStory = new Retrofit.Builder()
-            .baseUrl("http://192.168.1.6:4000/api/story/")
+            .baseUrl(URL_SERVER + "/api/story/")
             .client(getHeader(DataLocalManager.getAccessToken()))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -61,7 +65,8 @@ public interface APIStory {
     @Multipart
     @POST("create")
     Call<ResponseData> insertStory(@Part(Constant.KEY_TITLE) RequestBody title,
-                                  @Part MultipartBody.Part image);
+                                   @Part MultipartBody.Part image);
+
     @GET("gets")
     Call<ResponseStory> gets();
 
