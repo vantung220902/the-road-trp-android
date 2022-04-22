@@ -24,6 +24,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private List<Post> list;
     private Context context;
     private IClickPostComment iClickPostComment;
+    private boolean checked = true;
+
     public PostAdapter(List<Post> list, Context context, IClickPostComment iClickPostComment) {
         this.list = list;
         this.context = context;
@@ -51,9 +53,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         Glide.with(context).load(post.getUserId().getAvatar_url())
                 .centerCrop()
                 .into(holder.imageAuthor);
-
         holder.txtName.setText(post.getUserId().getFullName());
-
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int day = calendar.get(Calendar.DATE);
         String strTime = day == post.getTime_created() ? "Today" : day - post.getTime_created() + " ago";
@@ -61,6 +61,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvTitle.setText(post.getTitle());
         holder.btnComment.setOnClickListener(view -> {
             iClickPostComment.clickComment(post.get_id());
+        });
+        holder.btnHeart.setOnClickListener(view -> {
+            if (checked)
+                holder.btnHeart.setImageResource(R.drawable.heart_checked);
+            else
+                holder.btnHeart.setImageResource(R.drawable.heart);
+            checked = !checked;
         });
     }
 
@@ -70,14 +77,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imagePost, imageAuthor, imageHeart;
+        private ImageView imagePost, imageAuthor;
         private TextView txtName, txtTime, tvTitle;
-        private ImageButton btnComment;
+        private ImageButton btnComment, btnHeart;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imagePost = itemView.findViewById(R.id.img_post_item);
             imageAuthor = itemView.findViewById(R.id.image_author_post);
-            imageHeart = itemView.findViewById(R.id.heart_post);
+            btnHeart = itemView.findViewById(R.id.heart_post);
             btnComment = itemView.findViewById(R.id.comment_post);
             txtName = itemView.findViewById(R.id.name_author_post);
             txtTime = itemView.findViewById(R.id.time_create_post);

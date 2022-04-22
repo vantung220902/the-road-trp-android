@@ -22,7 +22,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 
@@ -54,9 +56,8 @@ public interface APIPost {
         return okClient;
 
     }
-
     APIPost apiPOST = new Retrofit.Builder()
-            .baseUrl(URL_SERVER+"/api/post/")
+            .baseUrl(URL_SERVER + "/api/post/")
             .client(getHeader(DataLocalManager.getAccessToken()))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -72,5 +73,6 @@ public interface APIPost {
 
     @GET("getById")
     Call<ResponsePost> getById(@Query("_userId") String _userID);
+
 
 }

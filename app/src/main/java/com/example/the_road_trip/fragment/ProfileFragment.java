@@ -26,6 +26,7 @@ import com.example.the_road_trip.model.ModelLink;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
+import com.google.android.material.button.MaterialButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +44,9 @@ public class ProfileFragment extends Fragment {
     private List<Post> listPost;
     private CircleImageView avatar;
     private TextView txtName, txtAddress;
-private ImageButton btnLogout;
+    private ImageButton btnLogout;
+    private MaterialButton btnEditProfile;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -116,5 +119,8 @@ private ImageButton btnLogout;
                 Log.d("Error Call Api", t.getMessage());
             }
         });
+    }
+    private void editProfile(){
+
     }
 }

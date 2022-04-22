@@ -37,6 +37,7 @@ import com.example.the_road_trip.model.Comment.Comment;
 import com.example.the_road_trip.model.Comment.ResponseComment;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
+import com.example.the_road_trip.model.ResponseData;
 import com.example.the_road_trip.model.Story.ResponseStory;
 import com.example.the_road_trip.model.Story.Story;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
