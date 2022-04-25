@@ -24,6 +24,12 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<ProfilePostAdapter.
         this.list = list;
         this.context = context;
     }
+    public void loadMore(List<Post> list) {
+        for (Post post : list) {
+            this.list.add(post);
+        }
+        notifyDataSetChanged();
+    }
 
     public void setData(List<Post> list) {
         this.list = list;

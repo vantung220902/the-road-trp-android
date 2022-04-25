@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.example.the_road_trip.model.ModelLink;
 import com.example.the_road_trip.model.ResponseData;
 import com.example.the_road_trip.model.User.User;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,7 +66,9 @@ public class RegisterActivity extends AppCompatActivity {
             if (awesomeValidation.validate()) {
                 register();
             } else {
-                Toast.makeText(this, "Validate Failed...", Toast.LENGTH_SHORT).show();
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(android.R.id.content).getRootView(), "Validate Failed...", Snackbar.LENGTH_LONG);
+                snackbar.show();
             }
         });
         btnBack.setOnClickListener(view -> {
@@ -109,19 +113,20 @@ public class RegisterActivity extends AppCompatActivity {
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            Toast.makeText(RegisterActivity.this, internalMessage, Toast.LENGTH_SHORT).show();
+                            SnackbarCustomer(internalMessage);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
+                    SnackbarCustomer("Register Failed...");
                     Log.e("Auth Error", e.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseData> call, Throwable t) {
-                Toast.makeText(RegisterActivity.this, "Register Failed...", Toast.LENGTH_SHORT).show();
+                SnackbarCustomer("Register Failed...");
                 Log.e("Auth Error", t.getMessage());
             }
         });
@@ -138,5 +143,21 @@ public class RegisterActivity extends AppCompatActivity {
             mToast.show();
         }
         backPressTime = System.currentTimeMillis();
+    }
+
+    private void SnackbarCustomer(String str) {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content).getRootView(),
+                        str, Snackbar.LENGTH_LONG)
+                .setAction("Try again", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar snackbar1 = Snackbar.make(findViewById(android.R.id.content).getRootView(),
+                                "Loading...", Snackbar.LENGTH_SHORT);
+                        register();
+                        snackbar1.show();
+                    }
+                });
+        snackbar.show();
     }
 }

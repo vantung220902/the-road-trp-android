@@ -19,8 +19,9 @@ import com.example.the_road_trip.adapter.ViewPagerAdapter;
 import com.example.the_road_trip.fragment.CreatePostFragment;
 import com.example.the_road_trip.fragment.DiscoverFragment;
 import com.example.the_road_trip.model.ModelLink;
+import com.google.android.material.snackbar.Snackbar;
 
-public class MainActivity extends AppCompatActivity implements CreatePostFragment.IUpdatePosts{
+public class MainActivity extends AppCompatActivity implements CreatePostFragment.IUpdatePosts {
     private final int ID_DISCOVER = 0;
     private final int ID_STORE = 1;
     private final int ID_ADD_NEWS = 2;
@@ -28,15 +29,17 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
     private final int ID_PERSON = 4;
     private MeowBottomNavigation meowBottomNavigation;
     private ViewPager2 viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String announcement = getIntent().getStringExtra("announcement");
-        if (announcement != null)
-            Toast.makeText(this, announcement,
-                    Toast.LENGTH_SHORT).show();
-
+        if (announcement != null) {
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content).getRootView(), announcement, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        }
         initUI();
         viewPager.setCurrentItem(0);
         meowBottomNavigation.show(0, true);
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
     public void updateData() {
         Intent intent = new Intent(MainActivity.this, SplashActivity.class);
         Bundle bundle = new Bundle();
-        ModelLink modelLink = new ModelLink(null,MainActivity.class);
+        ModelLink modelLink = new ModelLink(null, MainActivity.class);
         bundle.putSerializable("screen_next", modelLink);
         intent.putExtras(bundle);
         startActivity(intent);

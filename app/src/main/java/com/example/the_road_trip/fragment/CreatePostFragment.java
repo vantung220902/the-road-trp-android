@@ -38,6 +38,7 @@ import com.example.the_road_trip.model.ResponseData;
 
 import com.example.the_road_trip.utils.RealPathUtil;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
@@ -185,8 +186,9 @@ public class CreatePostFragment extends Fragment {
                         progressDialog.dismiss();
                         if (response.code() == 200) {
                             if (response.body().getSuccessful()) {
-                                Toast.makeText(getContext(), response.body().getMessage(),
-                                        Toast.LENGTH_SHORT).show();
+                                Snackbar snackbar = Snackbar
+                                        .make(getView().getRootView(), "Validate Failed...", Snackbar.LENGTH_LONG);
+                                snackbar.show();
                                 editText.setText("");
                                 imgPreview.setImageResource(0);
                                 iUpdatePosts.updateData();
@@ -200,7 +202,19 @@ public class CreatePostFragment extends Fragment {
                     @Override
                     public void onFailure(Call<ResponseData> call, Throwable t) {
                         progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Call Api Fail", Toast.LENGTH_SHORT).show();
+                        Snackbar snackbar = Snackbar
+                                .make(getView().getRootView(),
+                                        "Call Api Failed", Snackbar.LENGTH_LONG)
+                                .setAction("Try again", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Snackbar snackbar1 = Snackbar.make(getView().getRootView(),
+                                                "Loading...", Snackbar.LENGTH_SHORT);
+                                        callApiCreatePost();
+                                        snackbar1.show();
+                                    }
+                                });
+                        snackbar.show();
                     }
                 });
     }

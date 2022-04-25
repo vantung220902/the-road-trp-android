@@ -9,11 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +43,7 @@ import com.example.the_road_trip.model.ResponseData;
 import com.example.the_road_trip.model.Story.ResponseStory;
 import com.example.the_road_trip.model.Story.Story;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +68,11 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
     private LinearLayout containerStory, headingDiscovery;
     private TextView tvLogo, tvName;
     private ImageButton addStory;
+    private NestedScrollView nestedSV;
+    private ProgressBar loadingPB;
     private static int y;
+    private int page = 0;
+    private String postPre = "";
 
     @Nullable
     @Override
@@ -78,6 +85,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void clickComment(String postId) {
                 loadComments(postId);
+                postPre = postId;
             }
         });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -132,7 +140,26 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
             Intent intent = new Intent(getActivity(), CreateStoryActivity.class);
             startActivity(intent);
         });
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // on scroll change we are checking when users scroll as bottom.
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    // in this method we are incrementing page number,
+                    // making progress bar visible and calling get data method.
+                    page++;
+                    // on below line we are making our progress bar visible.
+                    loadingPB.setVisibility(View.VISIBLE);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadMorePosts();
+                        }
+                    }, 500);
 
+                }
+            }
+        });
         return view;
 
     }
@@ -146,6 +173,8 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         tvLogo = view.findViewById(R.id.tv_logo);
         tvName = view.findViewById(R.id.tv_display_name);
         addStory = view.findViewById(R.id.add_story);
+        nestedSV = view.findViewById(R.id.idNestedSVPost);
+        loadingPB = view.findViewById(R.id.idPBLoading);
     }
 
     public void loadPosts() {
@@ -161,19 +190,60 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            Toast.makeText(getContext(), internalMessage, Toast.LENGTH_SHORT).show();
+                            SnackbarCustomer(internalMessage,0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    SnackbarCustomer(e.getMessage(),0);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponsePost> call, Throwable t) {
                 Log.d("Error Call Api", t.getMessage());
+                SnackbarCustomer(t.getMessage(),0);
+            }
+        });
+    }
+
+    public void loadMorePosts() {
+        APIPost.apiPOST.gets("", page).enqueue(new Callback<ResponsePost>() {
+            @Override
+            public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
+                try {
+                    if (response.code() == 200) {
+                        listPost = response.body().getData();
+                        if (listPost.size() == 0) {
+                            loadingPB.setVisibility(View.GONE);
+                            Snackbar snackbar = Snackbar
+                                    .make(getView().getRootView(), "Don't have any post",
+                                            Snackbar.LENGTH_LONG);
+                            snackbar.show();
+                        }
+                        postAdapter.loadMore(listPost);
+                    } else {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response.errorBody().string());
+                            String internalMessage = jsonObject.getString("message");
+                            SnackbarCustomer(internalMessage,0);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    SnackbarCustomer(e.getMessage(),0);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponsePost> call, Throwable t) {
+                Log.d("Error Call Api", t.getMessage());
+                SnackbarCustomer(t.getMessage(),0);
             }
         });
     }
@@ -191,18 +261,20 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            Toast.makeText(getContext(), internalMessage, Toast.LENGTH_SHORT).show();
+                            SnackbarCustomer(internalMessage,2);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
+                    SnackbarCustomer(e.getMessage(),1);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseStory> call, Throwable t) {
+                SnackbarCustomer(t.getMessage(),1);
                 Log.d("Error Call Api", t.getMessage());
             }
         });
@@ -215,24 +287,26 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                 try {
                     if (response.code() == 200) {
                         listComments = response.body().getData();
-                        clickOpenBottomSheetFragment(listComments,postId);
+                        clickOpenBottomSheetFragment(listComments, postId);
                     } else {
                         JSONObject jsonObject = null;
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            Toast.makeText(getContext(), internalMessage, Toast.LENGTH_SHORT).show();
+                            SnackbarCustomer(internalMessage,2);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
+                    SnackbarCustomer(e.getMessage(),2);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseComment> call, Throwable t) {
+                SnackbarCustomer(t.getMessage(),2);
                 Log.d("Error Call Api", t.getMessage());
             }
         });
@@ -253,8 +327,34 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         }, 2000);
     }
 
-    private void clickOpenBottomSheetFragment(List<Comment> list,String postId) {
-        BottomSheetComment bottomSheetComment = new BottomSheetComment(list,postId);
+    private void clickOpenBottomSheetFragment(List<Comment> list, String postId) {
+        BottomSheetComment bottomSheetComment = new BottomSheetComment(list, postId);
         bottomSheetComment.show(getActivity().getSupportFragmentManager(), bottomSheetComment.getTag());
+    }
+
+    private void SnackbarCustomer(String str, int funcCall) {
+        Snackbar snackbar = Snackbar
+                .make(getView().getRootView(),
+                        str, Snackbar.LENGTH_LONG)
+                .setAction("Try again", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar snackbar1 = Snackbar.make(getView().getRootView(),
+                                "Loading...", Snackbar.LENGTH_SHORT);
+                        switch (funcCall) {
+                            case 0:
+                                loadPosts();
+                                break;
+                            case 1:
+                                loadStories();
+                                break;
+                            case 2:
+                                loadComments(postPre);
+                                break;
+                        }
+                        snackbar1.show();
+                    }
+                });
+        snackbar.show();
     }
 }

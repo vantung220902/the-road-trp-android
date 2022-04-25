@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.the_road_trip.model.ModelLink;
 import com.example.the_road_trip.model.User.User;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // init UI
-        if(isCurrentUser()){
+        if (isCurrentUser()) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }
@@ -62,13 +64,17 @@ public class LoginActivity extends AppCompatActivity {
         //check register successfully
         String announcement = getIntent().getStringExtra("announcement");
         if (announcement != null) {
-            Toast.makeText(this, announcement, Toast.LENGTH_SHORT).show();
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content).getRootView(), announcement, Snackbar.LENGTH_LONG);
+            snackbar.show();
         }
         btnLogin.setOnClickListener(view -> {
             if (awesomeValidation.validate()) {
                 login();
             } else {
-                Toast.makeText(this, "Validate Failed...", Toast.LENGTH_SHORT).show();
+                Snackbar snackbar = Snackbar
+                        .make(findViewById(android.R.id.content).getRootView(), "Validate Failed...", Snackbar.LENGTH_LONG);
+                snackbar.show();
             }
         });
         btnBack.setOnClickListener(view -> {
@@ -109,13 +115,13 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.body().getSuccessful()) {
                             Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                             Bundle bundle = new Bundle();
-                            ModelLink modelLink = new ModelLink("Login Successfully...!",MainActivity.class);
+                            ModelLink modelLink = new ModelLink("Login Successfully...!", MainActivity.class);
                             bundle.putSerializable("screen_next", modelLink);
                             intent.putExtras(bundle);
-                            String accessToken = response.body().getAccessToken()!=null ?
-                                   response.body().getAccessToken() :"";
-                            String refreshToken = response.body().getRefreshToken()!=null ?
-                                    response.body().getRefreshToken():"";
+                            String accessToken = response.body().getAccessToken() != null ?
+                                    response.body().getAccessToken() : "";
+                            String refreshToken = response.body().getRefreshToken() != null ?
+                                    response.body().getRefreshToken() : "";
                             User currUser = response.body();
                             DataLocalManager.setUserCurrent(currUser);
                             DataLocalManager.setAccessToken(accessToken);
@@ -123,14 +129,14 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         } else {
-                            Toast.makeText(LoginActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                            SnackbarCustomer(response.body().getMessage());
                         }
                     } else {
                         JSONObject jsonObject = null;
                         try {
-                            jsonObject = new JSONObject(response.errorBody().string()) ;
-                            String internalMessage = jsonObject.getString("message") ;
-                            Toast.makeText(LoginActivity.this, internalMessage, Toast.LENGTH_SHORT).show();
+                            jsonObject = new JSONObject(response.errorBody().string());
+                            String internalMessage = jsonObject.getString("message");
+                            SnackbarCustomer(internalMessage);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -144,13 +150,30 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Login Failed...", Toast.LENGTH_SHORT).show();
+                SnackbarCustomer("Login Failed...");
                 Log.e("Auth Error", t.getMessage());
             }
         });
     }
-    private boolean isCurrentUser(){
-        User user  = DataLocalManager.getUserCurrent();
-        return user!=null;
+
+    private boolean isCurrentUser() {
+        User user = DataLocalManager.getUserCurrent();
+        return user != null;
+    }
+
+    private void SnackbarCustomer(String str) {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content).getRootView(),
+                        str, Snackbar.LENGTH_LONG)
+                .setAction("Try again", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar snackbar1 = Snackbar.make(findViewById(android.R.id.content).getRootView(),
+                                "Loading...", Snackbar.LENGTH_SHORT);
+                        login();
+                        snackbar1.show();
+                    }
+                });
+        snackbar.show();
     }
 }

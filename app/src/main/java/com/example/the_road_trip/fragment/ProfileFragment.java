@@ -3,15 +3,18 @@ package com.example.the_road_trip.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import com.example.the_road_trip.R;
 import com.example.the_road_trip.activity.FirstInstallActivity;
 import com.example.the_road_trip.activity.MainActivity;
 import com.example.the_road_trip.activity.SplashActivity;
+import com.example.the_road_trip.activity.auth.UpdateUserActivity;
 import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.model.ModelLink;
@@ -27,6 +31,7 @@ import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +51,9 @@ public class ProfileFragment extends Fragment {
     private TextView txtName, txtAddress;
     private ImageButton btnLogout;
     private MaterialButton btnEditProfile;
+    private NestedScrollView nestedSV;
+    private ProgressBar loadingPB;
+    private int page = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,7 +78,32 @@ public class ProfileFragment extends Fragment {
             intent.putExtras(bundle);
             startActivity(intent);
             getActivity().finish();
+        });
+        btnEditProfile.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), UpdateUserActivity.class);
+            getContext().startActivity(intent);
+            getActivity().finish();
+        });
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                // on scroll change we are checking when users scroll as bottom.
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    // in this method we are incrementing page number,
+                    // making progress bar visible and calling get data method.
+                    page++;
+                    // on below line we are making our progress bar visible.
+                    loadingPB.setVisibility(View.VISIBLE);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            loadMorePosts("", page);
+                        }
+                    }, 500);
+
+                }
+            }
         });
         return view;
     }
@@ -81,6 +114,9 @@ public class ProfileFragment extends Fragment {
         txtAddress = view.findViewById(R.id.profile_address);
         txtName = view.findViewById(R.id.profile_name);
         btnLogout = view.findViewById(R.id.logout_profile);
+        btnEditProfile = view.findViewById(R.id.edit_profile);
+        nestedSV = view.findViewById(R.id.idNestedSVProfile);
+        loadingPB = view.findViewById(R.id.idPBLoadingProfile);
     }
 
     private void setInfo() {
@@ -104,23 +140,79 @@ public class ProfileFragment extends Fragment {
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            Toast.makeText(getContext(), internalMessage, Toast.LENGTH_SHORT).show();
+                            SnackbarCustomer(internalMessage);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    SnackbarCustomer(e.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<ResponsePost> call, Throwable t) {
                 Log.d("Error Call Api", t.getMessage());
+                SnackbarCustomer(t.getMessage());
             }
         });
     }
-    private void editProfile(){
 
+    public void loadMorePosts(String query, int page) {
+        APIPost.apiPOST.gets(query, page).enqueue(new Callback<ResponsePost>() {
+            @Override
+            public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
+                try {
+                    if (response.code() == 200) {
+                        listPost = response.body().getData();
+                        if (listPost.size() == 0) {
+                            loadingPB.setVisibility(View.GONE);
+                            Snackbar snackbar = Snackbar
+                                    .make(getView().getRootView(), "Load More",
+                                            Snackbar.LENGTH_SHORT);
+                            snackbar.show();
+                        }
+                        postAdapter.loadMore(listPost);
+                    } else {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response.errorBody().string());
+                            String internalMessage = jsonObject.getString("message");
+                            SnackbarCustomer(internalMessage);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    SnackbarCustomer(e.getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponsePost> call, Throwable t) {
+                Log.d("Error Call Api", t.getMessage());
+                SnackbarCustomer(t.getMessage());
+            }
+        });
+    }
+
+    private void SnackbarCustomer(String str) {
+        Snackbar snackbar = Snackbar
+                .make(getView().getRootView(),
+                        str, Snackbar.LENGTH_LONG)
+                .setAction("Try again", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar snackbar1 = Snackbar.make(getView().getRootView(),
+                                "Loading...", Snackbar.LENGTH_SHORT);
+                        loadPosts();
+                        snackbar1.show();
+                    }
+                });
+        snackbar.show();
     }
 }

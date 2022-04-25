@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.activity.MainActivity;
 import com.example.the_road_trip.model.Story.Story;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -49,8 +50,10 @@ public class DetailStoryActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Toast.makeText(this, "Error with this story, please do again!",
-                    Toast.LENGTH_SHORT);
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content).getRootView(),
+                            "Error with this story, please do again!", Snackbar.LENGTH_LONG);
+            snackbar.show();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {

@@ -11,13 +11,15 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="490dp"
         app:cardCornerRadius="30dp">
 
-        <ImageView
+        <com.example.the_road_trip.animation.TouchImageView
             android:id="@+id/img_post_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
             android:scaleType="fitXY"
             android:src="@drawable/background" />
     </androidx.cardview.widget.CardView>

@@ -1,10 +1,7 @@
 package com.example.the_road_trip.api;
 
 import static com.example.the_road_trip.api.Constant.URL_SERVER;
-
-import android.util.Log;
-
-import com.example.the_road_trip.model.Post.ResponsePost;
+import static com.example.the_road_trip.api.Constant.getHeader;
 import com.example.the_road_trip.model.ResponseData;
 import com.example.the_road_trip.model.Story.ResponseStory;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
@@ -29,31 +26,6 @@ import retrofit2.http.Part;
 public interface APIStory {
     //localhost:4000/api/story/
     Gson gson = new GsonBuilder().setDateFormat("yyyy-mm-dd HH:mm:ss").create();
-
-    static OkHttpClient getHeader(final String authorizationValue) {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient okClient = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
-                .addNetworkInterceptor(
-                        chain -> {
-                            Request request = null;
-                            if (authorizationValue != null) {
-                                Log.d("--Authorization-- ", authorizationValue);
-                                Request original = chain.request();
-                                Request.Builder requestBuilder = original.newBuilder()
-                                        .addHeader("Authorization", authorizationValue);
-                                request = requestBuilder.build();
-                            }
-                            return chain.proceed(request);
-                        })
-                .readTimeout(120, TimeUnit.SECONDS)
-                .connectTimeout(120, TimeUnit.SECONDS)
-                .writeTimeout(120, TimeUnit.SECONDS)
-                .build();
-        return okClient;
-
-    }
 
     APIStory apiStory = new Retrofit.Builder()
             .baseUrl(URL_SERVER + "/api/story/")

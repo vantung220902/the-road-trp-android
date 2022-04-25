@@ -1,5 +1,4 @@
-
-package com.example.the_road_trip.activity.story;
+package com.example.the_road_trip.activity.auth;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -17,24 +16,27 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.activity.MainActivity;
 import com.example.the_road_trip.activity.SplashActivity;
-import com.example.the_road_trip.api.APIStory;
+import com.example.the_road_trip.api.APIPost;
+import com.example.the_road_trip.api.APIUser;
+import com.example.the_road_trip.api.ApiAuth;
 import com.example.the_road_trip.api.Constant;
 import com.example.the_road_trip.model.ModelLink;
 import com.example.the_road_trip.model.ResponseData;
+import com.example.the_road_trip.model.User.ReturnUpdateUser;
+import com.example.the_road_trip.model.User.User;
+import com.example.the_road_trip.shared_preference.DataLocalManager;
 import com.example.the_road_trip.utils.RealPathUtil;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -49,14 +51,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateStoryActivity extends AppCompatActivity {
-    private static final int MY_REQUEST_CODE = 11;
+public class UpdateUserActivity extends AppCompatActivity {
+    private static final int MY_REQUEST_CODE = 10;
     private Uri mUri;
-    private EditText editText;
+    private EditText editFullName, editAddress;
     private ImageView imgBtnUpload, imgPreview;
     private MaterialButton btnSubmit, btnClear;
+    private ImageView btnBack;
     private ProgressDialog progressDialog;
-    private ImageButton btnBack;
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -81,18 +83,33 @@ public class CreateStoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_story);
+        setContentView(R.layout.activity_update_user);
         initUI();
+        editFullName.setHint(DataLocalManager.getUserCurrent().getFullName());
+        editAddress.setHint(DataLocalManager.getUserCurrent().getAddress());
         imgBtnUpload.setOnClickListener(view -> {
             onClickRequestPermission();
         });
         btnSubmit.setOnClickListener(view -> {
-            if (mUri != null) callApiCreateStory();
+            if (mUri != null) callApiUpdateUser();
         });
-        btnBack.setOnClickListener(view -> {
-            finish();
+        editFullName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                btnClear.setEnabled(true);
+            }
         });
-        editText.addTextChangedListener(new TextWatcher() {
+        editAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -109,20 +126,14 @@ public class CreateStoryActivity extends AppCompatActivity {
             }
         });
         btnClear.setOnClickListener(view -> {
-            editText.setText("");
+            editFullName.setText("");
+            editAddress.setText("");
             imgPreview.setImageResource(0);
         });
-    }
+        btnBack.setOnClickListener(view -> {
+            clearUI();
+        });
 
-    private void initUI() {
-        editText = findViewById(R.id.edit_upload_img_story);
-        imgPreview = findViewById(R.id.review_photo_upload_story);
-        imgBtnUpload = findViewById(R.id.img_btn_upload_img_story);
-        btnSubmit = findViewById(R.id.btn_submit_story);
-        btnClear = findViewById(R.id.btn_clear_all_story);
-        btnBack = findViewById(R.id.id_back_header_story);
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please wait...");
     }
 
     private void onClickRequestPermission() {
@@ -156,19 +167,21 @@ public class CreateStoryActivity extends AppCompatActivity {
         activityResultLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
 
-    private void callApiCreateStory() {
+    private void callApiUpdateUser() {
         progressDialog.show();
-        String title = editText.getText().toString().trim();
-        RequestBody requestBodyTitle = RequestBody.create(MediaType.parse("multipart/form-data"), title);
-        String strRealPath = RealPathUtil.getRealPath(this, mUri);
+        String fullName = editFullName.getText().toString().trim();
+        String address = editAddress.getText().toString().trim();
+        RequestBody requestBodyFullName = RequestBody.create(MediaType.parse("multipart/form-data"), fullName);
+        RequestBody requestBodyAddress = RequestBody.create(MediaType.parse("multipart/form-data"), address);
+        String strRealPath = RealPathUtil.getRealPath(UpdateUserActivity.this, mUri);
         File file = new File(strRealPath);
         RequestBody requestBodyAvt = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part mulPartBodyAvt = MultipartBody.Part.createFormData(Constant.KEY_IMAGE,
                 file.getName(), requestBodyAvt);
-        APIStory.apiStory.insertStory(requestBodyTitle, mulPartBodyAvt).
-                enqueue(new Callback<ResponseData>() {
+        APIUser.apiUser.updateUser(requestBodyFullName, requestBodyAddress, mulPartBodyAvt).
+                enqueue(new Callback<ReturnUpdateUser>() {
                     @Override
-                    public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
+                    public void onResponse(Call<ReturnUpdateUser> call, Response<ReturnUpdateUser> response) {
                         progressDialog.dismiss();
                         if (response.code() == 200) {
                             if (response.body().getSuccessful()) {
@@ -176,9 +189,10 @@ public class CreateStoryActivity extends AppCompatActivity {
                                         .make(findViewById(android.R.id.content).getRootView(),
                                                 response.body().getMessage(), Snackbar.LENGTH_LONG);
                                 snackbar.show();
-                                Intent intent = new Intent(CreateStoryActivity.this, SplashActivity.class);
+                                DataLocalManager.setUserCurrent(response.body().getData());
+                                Intent intent = new Intent(UpdateUserActivity.this, SplashActivity.class);
                                 Bundle bundle = new Bundle();
-                                ModelLink modelLink = new ModelLink("Create Story Successfully", MainActivity.class);
+                                ModelLink modelLink = new ModelLink(null, MainActivity.class);
                                 bundle.putSerializable("screen_next", modelLink);
                                 intent.putExtras(bundle);
                                 startActivity(intent);
@@ -192,12 +206,32 @@ public class CreateStoryActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseData> call, Throwable t) {
+                    public void onFailure(Call<ReturnUpdateUser> call, Throwable t) {
                         progressDialog.dismiss();
                         SnackbarCustomer("Call Api Fail");
                     }
                 });
     }
+
+    private void initUI() {
+        editFullName = findViewById(R.id.edit_fullName_update_user);
+        editAddress = findViewById(R.id.edit_address_update_user);
+        imgBtnUpload = findViewById(R.id.btn_upload_update_user);
+        imgPreview = findViewById(R.id.review_img_update_user);
+        btnSubmit = findViewById(R.id.btn_submit_update_user);
+        btnClear = findViewById(R.id.btn_clear_all_update_user);
+        btnBack = findViewById(R.id.btn_back_update_user);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait...");
+
+    }
+
+    private void clearUI() {
+        editFullName.setText("");
+        editAddress.setText("");
+        imgPreview.setImageResource(0);
+    }
+
     private void SnackbarCustomer(String str) {
         Snackbar snackbar = Snackbar
                 .make(findViewById(android.R.id.content).getRootView(),
@@ -207,7 +241,7 @@ public class CreateStoryActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Snackbar snackbar1 = Snackbar.make(findViewById(android.R.id.content).getRootView(),
                                 "Loading...", Snackbar.LENGTH_SHORT);
-                        callApiCreateStory();
+                        callApiUpdateUser();
                         snackbar1.show();
                     }
                 });

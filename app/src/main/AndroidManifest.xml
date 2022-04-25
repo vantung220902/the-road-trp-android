@@ -18,6 +18,9 @@
         android:theme="@style/Theme.TheRoadTrip"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.auth.UpdateUserActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.story.DetailStoryActivity"
             android:exported="false" />
         <activity
