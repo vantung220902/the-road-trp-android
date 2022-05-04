@@ -1,6 +1,7 @@
 package com.example.the_road_trip.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
+import com.example.the_road_trip.animation.TouchImageView;
 import com.example.the_road_trip.interfaces.IClickPostComment;
 import com.example.the_road_trip.model.Post.Post;
+import com.example.the_road_trip.shared_preference.DataLocalManager;
+import com.example.the_road_trip.utils.DisplayImageActivity;
 
 import java.util.List;
 import java.util.Calendar;
@@ -63,7 +67,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.txtName.setText(post.getUserId().getFullName());
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int day = calendar.get(Calendar.DATE);
-        String strTime = day == post.getTime_created() ? "Today" : day - post.getTime_created() + " ago";
+        String strTime = day == post.getTime_created() ? "Today" :
+                (day - post.getTime_created()) * -1 + " ago";
         holder.txtTime.setText(strTime);
         holder.tvTitle.setText(post.getTitle());
         holder.btnComment.setOnClickListener(view -> {
@@ -76,6 +81,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 holder.btnHeart.setImageResource(R.drawable.heart);
             checked = !checked;
         });
+        holder.imagePost.setOnClickListener(view -> {
+            Intent intent = new Intent(context, DisplayImageActivity.class);
+            intent.putExtra("image",post.getImage());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -84,7 +94,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imagePost, imageAuthor;
+        private ImageView  imageAuthor;
+        private ImageView imagePost;
         private TextView txtName, txtTime, tvTitle;
         private ImageButton btnComment, btnHeart;
 

@@ -155,7 +155,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         public void run() {
                             loadMorePosts();
                         }
-                    }, 500);
+                    }, 1000);
 
                 }
             }
@@ -327,7 +327,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         }, 2000);
     }
 
-    private void clickOpenBottomSheetFragment(List<Comment> list, String postId) {
+    private void  clickOpenBottomSheetFragment(List<Comment> list, String postId) {
         BottomSheetComment bottomSheetComment = new BottomSheetComment(list, postId);
         bottomSheetComment.show(getActivity().getSupportFragmentManager(), bottomSheetComment.getTag());
     }

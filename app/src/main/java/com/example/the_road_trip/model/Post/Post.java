@@ -2,7 +2,9 @@ package com.example.the_road_trip.model.Post;
 
 import com.example.the_road_trip.model.User.User;
 
-public class Post {
+import java.io.Serializable;
+
+public class Post implements Serializable {
     private String _id;
     private String title;
     private String image;

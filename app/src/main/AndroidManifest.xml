@@ -18,6 +18,21 @@
         android:theme="@style/Theme.TheRoadTrip"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.post.TrashPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.post.UpdatePotsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.post.ManagePostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.post.PostDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".utils.DisplayImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.auth.UpdateUserActivity"
             android:exported="false" />
         <activity

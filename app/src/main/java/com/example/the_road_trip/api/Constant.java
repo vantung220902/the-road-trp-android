@@ -14,7 +14,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 public class Constant {
     public static final String KEY_TITLE = "title";
     public static final String KEY_IMAGE = "image";
-    public static final String URL_SERVER = "http://172.25.240.1:4000";
+    public static final String URL_SERVER = "http://192.168.1.7:4000";
     public static final String KEY_BODY = "body";
     public static final String KEY_POST_ID = "postId";
     public static final String KEY_FULL_NAME = "fullName";

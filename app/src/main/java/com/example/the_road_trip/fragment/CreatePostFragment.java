@@ -29,9 +29,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.activity.MainActivity;
+import com.example.the_road_trip.adapter.ImageAdapter;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.api.Constant;
 import com.example.the_road_trip.model.ResponseData;
@@ -42,6 +45,11 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -52,13 +60,15 @@ import retrofit2.Response;
 
 public class CreatePostFragment extends Fragment {
     private static final int MY_REQUEST_CODE = 10;
-    private Uri mUri;
+    private List<Uri> mUri = new ArrayList<>();
     private EditText editText;
-    private ImageView imgBtnUpload, imgPreview;
+    private ImageView imgBtnUpload;
+    private RecyclerView rcvImagePreviews;
     private MaterialButton btnSubmit, btnClear;
     private ImageView btnBack;
     private ProgressDialog progressDialog;
     private IUpdatePosts iUpdatePosts;
+    private ImageAdapter imageAdapter;
 
     public interface IUpdatePosts {
         void updateData();
@@ -78,14 +88,8 @@ public class CreatePostFragment extends Fragment {
                         Intent data = result.getData();
                         if (data == null) return;
                         Uri uri = data.getData();
-                        mUri = uri;
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-                            imgPreview.setImageBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        mUri.add(uri);
+                        imageAdapter.setData(mUri);
                     }
                 }
             }
@@ -96,6 +100,10 @@ public class CreatePostFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View viewContainer = inflater.inflate(R.layout.fragment_create_post, container, false);
         initUI(viewContainer);
+        imageAdapter = new ImageAdapter(getContext(), mUri);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        rcvImagePreviews.setLayoutManager(linearLayoutManager);
+        rcvImagePreviews.setAdapter(imageAdapter);
         imgBtnUpload.setOnClickListener(view -> {
             onClickRequestPermission();
         });
@@ -120,7 +128,7 @@ public class CreatePostFragment extends Fragment {
         });
         btnClear.setOnClickListener(view -> {
             editText.setText("");
-            imgPreview.setImageResource(0);
+            mUri = null;
         });
         btnBack.setOnClickListener(view -> {
             ((MainActivity) getActivity()).getViewPager().setCurrentItem(0);
@@ -130,7 +138,7 @@ public class CreatePostFragment extends Fragment {
 
     private void initUI(View view) {
         editText = view.findViewById(R.id.edit_upload_img_post);
-        imgPreview = view.findViewById(R.id.review_photo_upload);
+        rcvImagePreviews = view.findViewById(R.id.rcv_preview_images);
         imgBtnUpload = view.findViewById(R.id.img_btn_upload_img);
         btnSubmit = view.findViewById(R.id.btn_submit_post);
         btnClear = view.findViewById(R.id.btn_clear_all);
@@ -174,12 +182,14 @@ public class CreatePostFragment extends Fragment {
         progressDialog.show();
         String title = editText.getText().toString().trim();
         RequestBody requestBodyTitle = RequestBody.create(MediaType.parse("multipart/form-data"), title);
-        String strRealPath = RealPathUtil.getRealPath(getContext(), mUri);
-        File file = new File(strRealPath);
-        RequestBody requestBodyAvt = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part mulPartBodyAvt = MultipartBody.Part.createFormData(Constant.KEY_IMAGE,
-                file.getName(), requestBodyAvt);
-        APIPost.apiPOST.insertPost(requestBodyTitle, mulPartBodyAvt).
+        MediaType mediaType = MediaType.parse("");
+        MultipartBody.Part[] fileParts = new MultipartBody.Part[mUri.size()];
+        for (int i = 0; i < mUri.size(); i++) {
+            File file = new File(mUri.get(i).getPath());
+            RequestBody fileBody = RequestBody.create(mediaType, file);
+            fileParts[i] = MultipartBody.Part.createFormData("images",file.getName(), fileBody);
+        }
+        APIPost.apiPOST.insertPost(requestBodyTitle, fileParts).
                 enqueue(new Callback<ResponseData>() {
                     @Override
                     public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
@@ -187,18 +197,22 @@ public class CreatePostFragment extends Fragment {
                         if (response.code() == 200) {
                             if (response.body().getSuccessful()) {
                                 Snackbar snackbar = Snackbar
-                                        .make(getView().getRootView(), "Validate Failed...", Snackbar.LENGTH_LONG);
+                                        .make(getView().getRootView(), response.body().getMessage(), Snackbar.LENGTH_LONG);
                                 snackbar.show();
                                 editText.setText("");
-                                imgPreview.setImageResource(0);
-                                iUpdatePosts.updateData();
+                                mUri = null;
+
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        iUpdatePosts.updateData();
+                                    }
+                                }, 500);
                             }
                         } else {
                             Log.d("Error", response.toString());
                         }
-
                     }
-
                     @Override
                     public void onFailure(Call<ResponseData> call, Throwable t) {
                         progressDialog.dismiss();

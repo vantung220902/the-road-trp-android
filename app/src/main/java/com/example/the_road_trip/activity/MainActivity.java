@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
     private final int ID_PERSON = 4;
     private MeowBottomNavigation meowBottomNavigation;
     private ViewPager2 viewPager;
+    private long backPressTime;
+    private Toast mToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,14 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
             snackbar.show();
         }
         initUI();
-        viewPager.setCurrentItem(0);
-        meowBottomNavigation.show(0, true);
+        if (getIntent().hasExtra("location")) {
+            int location = Integer.parseInt(getIntent().getStringExtra("location"));
+            viewPager.setCurrentItem(location);
+            meowBottomNavigation.show(location, true);
+        } else {
+            viewPager.setCurrentItem(0);
+            meowBottomNavigation.show(0, true);
+        }
         meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_DISCOVER, R.drawable.home));
         meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_STORE, R.drawable.shopping));
         meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_ADD_NEWS, R.drawable.add_news));
@@ -92,6 +100,18 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
         intent.putExtras(bundle);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressTime + 2000 > System.currentTimeMillis()) {
+            mToast.cancel();
+            super.onBackPressed();
+        } else {
+            mToast = Toast.makeText(MainActivity.this, "Press Back To Exit", Toast.LENGTH_SHORT);
+            mToast.show();
+        }
+        backPressTime = System.currentTimeMillis();
     }
 
 }

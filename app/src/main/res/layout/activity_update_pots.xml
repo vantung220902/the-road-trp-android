@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activity.post.UpdatePotsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +22,7 @@
             tools:context=".activity.post.CreatePostActivity">
 
             <ImageButton
-                android:id="@+id/btn_back_post"
+                android:id="@+id/btn_back_update_post"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"
@@ -34,24 +35,22 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:text="Create a Post"
+                android:text="Update Post"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:layout_marginEnd="10dp"
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_clear_all"
+                android:id="@+id/btn_clear_all_update_post"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.4"
                 android:enabled="false"
                 android:text="Clear All"
                 android:textColor="@color/white"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
-                app:cornerRadius="8dp"
-                />
+                app:cornerRadius="8dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -63,22 +62,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add a Title"
+                android:text="Change Title"
                 android:textSize="16sp" />
 
             <EditText
-                android:id="@+id/edit_upload_img_post"
+                android:id="@+id/edit_title_update_posts"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter Your Tittle" />
+                android:layout_height="wrap_content" />
 
             <ImageView
-                android:id="@+id/img_btn_upload_img"
+                android:id="@+id/btn_upload_update_post"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scaleType="center"
                 android:src="@drawable/upload" />
-
 
             <View
                 android:layout_width="match_parent"
@@ -87,17 +84,17 @@
                 android:background="@color/gray" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_submit_post"
+                android:id="@+id/btn_submit_update_post"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="publish your post"
+                android:text="update post"
                 android:textColor="@color/white"
                 app:cornerRadius="10dp" />
 
-           <androidx.recyclerview.widget.RecyclerView
-               android:id="@+id/rcv_preview_images"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/review_img_update_post"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     </LinearLayout>

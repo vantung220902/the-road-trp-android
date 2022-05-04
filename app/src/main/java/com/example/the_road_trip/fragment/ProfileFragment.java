@@ -24,12 +24,14 @@ import com.example.the_road_trip.activity.FirstInstallActivity;
 import com.example.the_road_trip.activity.MainActivity;
 import com.example.the_road_trip.activity.SplashActivity;
 import com.example.the_road_trip.activity.auth.UpdateUserActivity;
+import com.example.the_road_trip.activity.post.ManagePostActivity;
 import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.model.ModelLink;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
 import com.example.the_road_trip.shared_preference.DataLocalManager;
+import com.example.the_road_trip.utils.DisplayImageActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -48,11 +50,12 @@ public class ProfileFragment extends Fragment {
     private ProfilePostAdapter postAdapter;
     private List<Post> listPost;
     private CircleImageView avatar;
-    private TextView txtName, txtAddress;
+    private TextView txtName, txtAddress, tvNumberPost;
     private ImageButton btnLogout;
     private MaterialButton btnEditProfile;
     private NestedScrollView nestedSV;
     private ProgressBar loadingPB;
+    private MaterialButton btnManagePost;
     private int page = 0;
 
     @Override
@@ -100,10 +103,20 @@ public class ProfileFragment extends Fragment {
 
                             loadMorePosts("", page);
                         }
-                    }, 500);
+                    }, 1000);
 
                 }
             }
+        });
+        avatar.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), DisplayImageActivity.class);
+            intent.putExtra("image", DataLocalManager.getUserCurrent().getAvatar_url());
+            startActivity(intent);
+        });
+        btnManagePost.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), ManagePostActivity.class);
+            startActivity(intent);
+            getActivity().finish();
         });
         return view;
     }
@@ -117,6 +130,8 @@ public class ProfileFragment extends Fragment {
         btnEditProfile = view.findViewById(R.id.edit_profile);
         nestedSV = view.findViewById(R.id.idNestedSVProfile);
         loadingPB = view.findViewById(R.id.idPBLoadingProfile);
+        tvNumberPost = view.findViewById(R.id.profile_number_pots);
+        btnManagePost = view.findViewById(R.id.btn_manage_post);
     }
 
     private void setInfo() {
@@ -128,13 +143,14 @@ public class ProfileFragment extends Fragment {
     }
 
     public void loadPosts() {
-        APIPost.apiPOST.getById(DataLocalManager.getUserCurrent().get_id()).enqueue(new Callback<ResponsePost>() {
+        APIPost.apiPOST.getById("",0,false).enqueue(new Callback<ResponsePost>() {
             @Override
             public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                 try {
                     if (response.code() == 200) {
                         listPost = response.body().getData();
                         postAdapter.setData(listPost);
+                        tvNumberPost.setText(listPost.size() + "");
                     } else {
                         JSONObject jsonObject = null;
                         try {
@@ -168,6 +184,9 @@ public class ProfileFragment extends Fragment {
                         listPost = response.body().getData();
                         if (listPost.size() == 0) {
                             loadingPB.setVisibility(View.GONE);
+                            int number = listPost.size() + Integer
+                                    .parseInt(tvNumberPost.getText().toString());
+                            tvNumberPost.setText(number + "");
                             Snackbar snackbar = Snackbar
                                     .make(getView().getRootView(), "Load More",
                                             Snackbar.LENGTH_SHORT);

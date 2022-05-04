@@ -94,7 +94,7 @@ public class SearchFragment extends Fragment {
                                     ? editSearch.getText().toString() : "";
                             loadMorePosts(str, page);
                         }
-                    }, 500);
+                    }, 1000);
 
                 }
             }
@@ -115,6 +115,7 @@ public class SearchFragment extends Fragment {
             public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                 try {
                     if (response.code() == 200) {
+
                         listPost = response.body().getData();
                         profilePostAdapter.setData(listPost);
                     } else {
@@ -139,6 +140,7 @@ public class SearchFragment extends Fragment {
                 SnackbarCustomer(t.getMessage(), query, page);
             }
         });
+        loadingPB.setVisibility(View.GONE);
     }
 
     public void loadMorePosts(String query, int page) {
@@ -149,7 +151,7 @@ public class SearchFragment extends Fragment {
                     if (response.code() == 200) {
                         listPost = response.body().getData();
                         if (listPost.size() == 0) {
-                            loadingPB.setVisibility(View.GONE);
+
                             Snackbar snackbar = Snackbar
                                     .make(getView().getRootView(), "Load More",
                                             Snackbar.LENGTH_SHORT);
@@ -180,6 +182,7 @@ public class SearchFragment extends Fragment {
                 SnackbarCustomer(t.getMessage(), query, page);
             }
         });
+        loadingPB.setVisibility(View.GONE);
     }
 
     private void SnackbarCustomer(String str, String query, int page) {

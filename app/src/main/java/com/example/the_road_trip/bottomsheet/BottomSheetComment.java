@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.adapter.CommentAdapter;
 import com.example.the_road_trip.api.APIPost;
@@ -23,6 +24,7 @@ import com.example.the_road_trip.api.ApiComments;
 import com.example.the_road_trip.model.Comment.Comment;
 import com.example.the_road_trip.model.Comment.ResponseInsertComment;
 import com.example.the_road_trip.model.ResponseData;
+import com.example.the_road_trip.shared_preference.DataLocalManager;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -30,6 +32,7 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,6 +41,7 @@ public class BottomSheetComment extends BottomSheetDialogFragment {
     private List<Comment> list;
     private MaterialButton btnAdd;
     private EditText editComment;
+    private CircleImageView avatar;
     private String postId;
     private CommentAdapter commentAdapter;
     private ProgressDialog progressDialog;
@@ -56,6 +60,10 @@ public class BottomSheetComment extends BottomSheetDialogFragment {
         RecyclerView rcvData = view.findViewById(R.id.rcv_comments);
         btnAdd = view.findViewById(R.id.btn_submit_comment);
         editComment = view.findViewById(R.id.edit_add_comment);
+        avatar = view.findViewById(R.id.comment_avatar_add);
+        Glide.with(view).
+                load(DataLocalManager.getUserCurrent().getAvatar_url())
+                .into(avatar);
         btnAdd.setOnClickListener(view1 -> {
             addComment(editComment.getText().toString(), postId);
         });

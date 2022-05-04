@@ -2,19 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    android:layout_marginBottom="20dp"
-    android:background="@drawable/border_radius"
+    android:layout_height="match_parent"
     android:orientation="vertical">
+    <ImageButton
+        android:id="@+id/btn_back_post_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="10dp"
+        android:src="@drawable/back" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="490dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/border_radius"
         app:cardCornerRadius="30dp">
+
         <ImageView
-            android:id="@+id/img_post_item"
+            android:id="@+id/img_post_detail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clickable="true"
@@ -38,7 +44,7 @@
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/image_author_post"
+                android:id="@+id/image_author_post_detail"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/avatar" />
@@ -51,7 +57,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/name_author_post"
+                    android:id="@+id/name_author_post_detail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
@@ -61,7 +67,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/time_create_post"
+                    android:id="@+id/time_create_post_detail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1 hour ago"
@@ -78,7 +84,7 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/heart_post"
+                android:id="@+id/heart_post_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -89,7 +95,7 @@
                 app:itemTextColor="@color/custom_color_bottom_nav" />
 
             <ImageButton
-                android:id="@+id/comment_post"
+                android:id="@+id/comment_post_detail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#00ffffff"
@@ -109,13 +115,12 @@
         android:paddingBottom="30dp">
 
         <TextView
-            android:id="@+id/post_title"
+            android:id="@+id/post_title_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/app_name"
             android:textColor="@color/black"
             android:textSize="16sp"
-
             android:textStyle="italic" />
     </LinearLayout>
 </LinearLayout>
