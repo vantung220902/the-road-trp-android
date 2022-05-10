@@ -43,19 +43,6 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
             snackbar.show();
         }
         initUI();
-        if (getIntent().hasExtra("location")) {
-            int location = Integer.parseInt(getIntent().getStringExtra("location"));
-            viewPager.setCurrentItem(location);
-            meowBottomNavigation.show(location, true);
-        } else {
-            viewPager.setCurrentItem(0);
-            meowBottomNavigation.show(0, true);
-        }
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_DISCOVER, R.drawable.home));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_STORE, R.drawable.shopping));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_ADD_NEWS, R.drawable.add_news));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_MESSAGE, R.drawable.search));
-        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_PERSON, R.drawable.person));
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -80,6 +67,19 @@ public class MainActivity extends AppCompatActivity implements CreatePostFragmen
         viewPager = findViewById(R.id.viewPagerMain);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
+        if (getIntent().hasExtra("location")) {
+            int location = Integer.parseInt(getIntent().getStringExtra("location"));
+            viewPager.setCurrentItem(location);
+            meowBottomNavigation.show(location, true);
+        } else {
+            viewPager.setCurrentItem(0);
+            meowBottomNavigation.show(0, true);
+        }
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_DISCOVER, R.drawable.home));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_STORE, R.drawable.shopping));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_ADD_NEWS, R.drawable.add_news));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_MESSAGE, R.drawable.bell));
+        meowBottomNavigation.add(new MeowBottomNavigation.Model(ID_PERSON, R.drawable.person));
     }
 
 

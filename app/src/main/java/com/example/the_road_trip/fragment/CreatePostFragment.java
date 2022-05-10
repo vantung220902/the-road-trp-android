@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.activity.MainActivity;
+import com.example.the_road_trip.activity.auth.UpdateUserActivity;
 import com.example.the_road_trip.adapter.ImageAdapter;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.api.Constant;
@@ -182,10 +183,11 @@ public class CreatePostFragment extends Fragment {
         progressDialog.show();
         String title = editText.getText().toString().trim();
         RequestBody requestBodyTitle = RequestBody.create(MediaType.parse("multipart/form-data"), title);
-        MediaType mediaType = MediaType.parse("");
+        MediaType mediaType = MediaType.parse("multipart/form-data");
         MultipartBody.Part[] fileParts = new MultipartBody.Part[mUri.size()];
         for (int i = 0; i < mUri.size(); i++) {
-            File file = new File(mUri.get(i).getPath());
+            String strRealPath = RealPathUtil.getRealPath(getContext(), mUri.get(i));
+            File file = new File(strRealPath);
             RequestBody fileBody = RequestBody.create(mediaType, file);
             fileParts[i] = MultipartBody.Part.createFormData("images",file.getName(), fileBody);
         }

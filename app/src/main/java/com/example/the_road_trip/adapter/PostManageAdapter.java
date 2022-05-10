@@ -50,7 +50,8 @@ public class PostManageAdapter extends RecyclerView.Adapter<PostManageAdapter.My
         Post post = list.get(position);
         holder.tvPostTitle.setText(post.getTitle());
         holder.tvNameAuthor.setText(post.getUserId().getFullName());
-        Glide.with(mContext).load(post.getImage())
+        String image = post.getImage().split(";")[0];
+        Glide.with(mContext).load(image)
                 .centerCrop()
                 .into(holder.imagePost);
         Glide.with(mContext).load(post.getUserId().getAvatar_url())

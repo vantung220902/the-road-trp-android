@@ -18,6 +18,18 @@
         android:theme="@style/Theme.TheRoadTrip"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.chat.DetailChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.chat.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.post.SearchPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.auth.AnotherActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.post.TrashPostActivity"
             android:exported="false" />
         <activity

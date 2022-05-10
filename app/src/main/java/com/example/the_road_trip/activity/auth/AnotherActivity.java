@@ -1,42 +1,34 @@
-package com.example.the_road_trip.fragment;
+package com.example.the_road_trip.activity.auth;
 
-import android.content.Intent;
-import android.os.Bundle;
-
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
-import com.example.the_road_trip.activity.FirstInstallActivity;
-import com.example.the_road_trip.activity.MainActivity;
-import com.example.the_road_trip.activity.SplashActivity;
-import com.example.the_road_trip.activity.auth.UpdateUserActivity;
-import com.example.the_road_trip.activity.post.ManagePostActivity;
 import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.adapter.ViewPagerProfileAdapter;
 import com.example.the_road_trip.api.APIPost;
-import com.example.the_road_trip.model.ModelLink;
+import com.example.the_road_trip.api.ApiFriend;
+import com.example.the_road_trip.model.Friend.Friend;
+import com.example.the_road_trip.model.Friend.StatusFriend;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
-import com.example.the_road_trip.shared_preference.DataLocalManager;
-import com.example.the_road_trip.utils.DisplayImageActivity;
+import com.example.the_road_trip.model.ResponseData;
+import com.example.the_road_trip.model.Story.ResponseStory;
+import com.example.the_road_trip.model.User.User;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,43 +40,30 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfileFragment extends Fragment {
-    private ProfilePostAdapter postAdapter;
-    private List<Post> listPost;
-    private CircleImageView avatar;
+public class AnotherActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager2 viewPager2;
     private ViewPagerProfileAdapter viewPagerProfileAdapter;
-    private TextView txtName, txtAddress, tvNumberPost;
-    private ImageButton btnLogout;
-    private MaterialButton btnEditProfile;
+    private CircleImageView avatar;
+    private TextView tvAddress, tvFullName, tvPosts;
+    private ProfilePostAdapter postAdapter;
+    private MaterialButton btnAddFriend;
+    private List<Post> listPost;
     private NestedScrollView nestedSV;
     private ProgressBar loadingPB;
-    private MaterialButton btnManagePost;
     private int page = 0;
+    private User user;
+    private int status = -1;
+    private String id = "";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        initUI(view);
-        setInfo();
-        btnLogout.setOnClickListener(view1 -> {
-            DataLocalManager.setRefreshToken("");
-            DataLocalManager.setAccessToken("");
-            DataLocalManager.setUserCurrent(null);
-            Intent intent = new Intent(getContext(), SplashActivity.class);
-            Bundle bundle = new Bundle();
-            ModelLink modelLink = new ModelLink(null, FirstInstallActivity.class);
-            bundle.putSerializable("screen_next", modelLink);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            getActivity().finish();
-        });
-        btnEditProfile.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), UpdateUserActivity.class);
-            getContext().startActivity(intent);
-        });
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_another);
+        user = (User) getIntent().getExtras().get("user_item");
+        initUI();
+        getStatus();
+        loadPosts();
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -107,7 +86,7 @@ public class ProfileFragment extends Fragment {
                 tabLayout.selectTab(tabLayout.getTabAt(position));
             }
         });
-        loadPosts();
+
         nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -121,62 +100,50 @@ public class ProfileFragment extends Fragment {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            loadMorePosts("", page);
+                            loadMorePosts(page);
                         }
                     }, 1000);
 
                 }
             }
         });
-        avatar.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), DisplayImageActivity.class);
-            intent.putExtra("image", DataLocalManager.getUserCurrent().getAvatar_url());
-            startActivity(intent);
+        btnAddFriend.setOnClickListener(view -> {
+            actionInviting(user.get_id(), id);
         });
-        btnManagePost.setOnClickListener(view1 -> {
-            Intent intent = new Intent(getContext(), ManagePostActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-        });
-        return view;
     }
 
-    private void initUI(View view) {
-        avatar = view.findViewById(R.id.profile_avatar);
-        txtAddress = view.findViewById(R.id.profile_address);
-        txtName = view.findViewById(R.id.profile_name);
-        btnLogout = view.findViewById(R.id.logout_profile);
-        btnEditProfile = view.findViewById(R.id.edit_profile);
-        tabLayout = view.findViewById(R.id.tab_layout_profile);
-        viewPager2 = view.findViewById(R.id.view_pager_profile);
-        nestedSV = view.findViewById(R.id.idNestedSVProfile);
-        loadingPB = view.findViewById(R.id.idPBLoadingProfile);
-        tvNumberPost = view.findViewById(R.id.profile_number_pots);
-        btnManagePost = view.findViewById(R.id.btn_manage_post);
-        postAdapter = new ProfilePostAdapter(getContext(), listPost);
-        viewPagerProfileAdapter = new ViewPagerProfileAdapter(getActivity(), postAdapter);
+    private void initUI() {
+        tabLayout = findViewById(R.id.tab_layout_another);
+        viewPager2 = findViewById(R.id.view_pager_another);
+        avatar = findViewById(R.id.another_avatar);
+        nestedSV = findViewById(R.id.idNestedSVPost);
+        loadingPB = findViewById(R.id.idPBLoadingRcvPost);
+        tvAddress = findViewById(R.id.another_address);
+        tvFullName = findViewById(R.id.another_name);
+        tvPosts = findViewById(R.id.another_number_pots);
+        btnAddFriend = findViewById(R.id.btn_add_friend);
+        Glide.with(this).load(user.getAvatar_url())
+                .centerCrop()
+                .into(avatar);
+        tvAddress.setText(user.getAddress());
+        tvFullName.setText(user.getFullName());
+        postAdapter = new ProfilePostAdapter(this, listPost);
+        viewPagerProfileAdapter = new ViewPagerProfileAdapter(this, postAdapter);
         viewPager2.setAdapter(viewPagerProfileAdapter);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.grid));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.event));
-    }
 
-    private void setInfo() {
-        Glide.with(getContext()).load(DataLocalManager.getUserCurrent().getAvatar_url())
-                .centerCrop()
-                .into(avatar);
-        txtName.setText(DataLocalManager.getUserCurrent().getFullName());
-        txtAddress.setText(DataLocalManager.getUserCurrent().getAddress());
     }
 
     public void loadPosts() {
-        APIPost.apiPOST.getById("", 0, false).enqueue(new Callback<ResponsePost>() {
+        APIPost.apiPOST.getPostUser(user.get_id(), 0).enqueue(new Callback<ResponsePost>() {
             @Override
             public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                 try {
                     if (response.code() == 200) {
                         listPost = response.body().getData();
+                        tvPosts.setText(listPost.size() + "");
                         postAdapter.setData(listPost);
-                        tvNumberPost.setText(listPost.size() + "");
                     } else {
                         JSONObject jsonObject = null;
                         try {
@@ -202,8 +169,8 @@ public class ProfileFragment extends Fragment {
         loadingPB.setVisibility(View.GONE);
     }
 
-    public void loadMorePosts(String query, int page) {
-        APIPost.apiPOST.gets(query, page).enqueue(new Callback<ResponsePost>() {
+    public void loadMorePosts(int page) {
+        APIPost.apiPOST.getPostUser(user.get_id(), page).enqueue(new Callback<ResponsePost>() {
             @Override
             public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                 try {
@@ -211,14 +178,11 @@ public class ProfileFragment extends Fragment {
                         listPost = response.body().getData();
                         if (listPost.size() == 0) {
                             Snackbar snackbar = Snackbar
-                                    .make(getView().getRootView(), "Don't have any post",
+                                    .make(findViewById(android.R.id.content), "Load More",
                                             Snackbar.LENGTH_SHORT);
                             snackbar.show();
                         }
                         postAdapter.loadMore(listPost);
-                        int number = listPost.size() + Integer
-                                .parseInt(tvNumberPost.getText().toString());
-                        tvNumberPost.setText(number + "");
                     } else {
                         JSONObject jsonObject = null;
                         try {
@@ -246,19 +210,110 @@ public class ProfileFragment extends Fragment {
         loadingPB.setVisibility(View.GONE);
     }
 
+    private void getStatus() {
+        ApiFriend.apiFriend.status(user.get_id()).enqueue(new Callback<StatusFriend>() {
+            @Override
+            public void onResponse(Call<StatusFriend> call, Response<StatusFriend> response) {
+                try {
+                    if (response.code() == 200) {
+                        Friend friend = response.body().getData();
+                        if (friend != null) {
+                            status = friend.getStatus();
+                            changeBtnFriend(status);
+                            id = friend.get_id();
+                        }
+                    } else {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response.errorBody().string());
+                            String internalMessage = jsonObject.getString("message");
+                            SnackbarCustomer(internalMessage);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    SnackbarCustomer(e.getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StatusFriend> call, Throwable t) {
+                Log.d("Error Call Api", t.getMessage());
+                SnackbarCustomer(t.getMessage());
+            }
+        });
+    }
+
+    private void actionInviting(String receiver, String id) {
+        ApiFriend.apiFriend.action(receiver, id, status).enqueue(new Callback<ResponseData>() {
+            @Override
+            public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
+                try {
+                    if (response.code() == 200) {
+                        status++;
+                        if (status >= 1) status = -1;
+                        changeBtnFriend(status);
+                        SnackbarCustomer(response.body().getMessage());
+                    } else {
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response.errorBody().string());
+                            String internalMessage = jsonObject.getString("message");
+                            SnackbarCustomer(internalMessage);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    SnackbarCustomer(e.getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseData> call, Throwable t) {
+                Log.d("Error Call Api", t.getMessage());
+                SnackbarCustomer(t.getMessage());
+            }
+        });
+    }
+
     private void SnackbarCustomer(String str) {
         Snackbar snackbar = Snackbar
-                .make(getView().getRootView(),
+                .make(findViewById(android.R.id.content),
                         str, Snackbar.LENGTH_LONG)
                 .setAction("Try again", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Snackbar snackbar1 = Snackbar.make(getView().getRootView(),
+                        Snackbar snackbar1 = Snackbar.make(findViewById(android.R.id.content),
                                 "Loading...", Snackbar.LENGTH_SHORT);
                         loadPosts();
                         snackbar1.show();
                     }
                 });
         snackbar.show();
+    }
+
+    private void changeBtnFriend(int status) {
+        switch (status) {
+            case -1:
+                btnAddFriend.setText(R.string.add_friend);
+                btnAddFriend.setIcon(getDrawable(R.drawable.add_friend));
+                break;
+            case 0:
+                btnAddFriend.setText(R.string.remove_invite);
+                btnAddFriend.setIcon(getDrawable(R.drawable.invite));
+                break;
+            case 1:
+                btnAddFriend.setText(R.string.remove_friend);
+                btnAddFriend.setIcon(getDrawable(R.drawable.close));
+                break;
+        }
     }
 }

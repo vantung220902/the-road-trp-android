@@ -68,4 +68,7 @@ public interface APIPost {
 
     @PUT("recovery")
     Call<ResponseData> recovery(@Query("_id") String _id);
+
+    @GET("getPostUser")
+    Call<ResponsePost> getPostUser(@Query("_id") String _id, @Query("paging") int paging);
 }

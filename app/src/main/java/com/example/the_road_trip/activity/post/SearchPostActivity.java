@@ -1,29 +1,24 @@
-package com.example.the_road_trip.fragment;
+package com.example.the_road_trip.activity.post;
 
-import android.os.Bundle;
-
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.model.Post.Post;
 import com.example.the_road_trip.model.Post.ResponsePost;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
@@ -35,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchFragment extends Fragment {
+public class SearchPostActivity extends AppCompatActivity {
     private EditText editSearch;
     private RecyclerView rcvResult;
     private List<Post> listPost;
@@ -45,12 +40,11 @@ public class SearchFragment extends Fragment {
     private int page = 0;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
-        initUI(view);
-        profilePostAdapter = new ProfilePostAdapter(getContext(), listPost);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search_post);
+        initUI();
+        profilePostAdapter = new ProfilePostAdapter(this, listPost);
         StaggeredGridLayoutManager staggeredGridLayoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rcvResult.setLayoutManager(staggeredGridLayoutManager);
@@ -99,16 +93,13 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
-        return view;
     }
-
-    private void initUI(View view) {
-        editSearch = view.findViewById(R.id.edit_search_post);
-        rcvResult = view.findViewById(R.id.rcv_search_post);
-        nestedSV = view.findViewById(R.id.idNestedSVSearch);
-        loadingPB = view.findViewById(R.id.idPBLoadingSearch);
+    private void initUI() {
+        editSearch = findViewById(R.id.edit_search_post);
+        rcvResult = findViewById(R.id.rcv_search_post);
+        nestedSV = findViewById(R.id.idNestedSVSearch);
+        loadingPB = findViewById(R.id.idPBLoadingSearch);
     }
-
     public void loadPosts(String query, int paging) {
         APIPost.apiPOST.gets(query, paging).enqueue(new Callback<ResponsePost>() {
             @Override
@@ -153,7 +144,7 @@ public class SearchFragment extends Fragment {
                         if (listPost.size() == 0) {
 
                             Snackbar snackbar = Snackbar
-                                    .make(getView().getRootView(), "Load More",
+                                    .make(findViewById(android.R.id.content).getRootView(), "Load More",
                                             Snackbar.LENGTH_SHORT);
                             snackbar.show();
                         }
@@ -187,12 +178,12 @@ public class SearchFragment extends Fragment {
 
     private void SnackbarCustomer(String str, String query, int page) {
         Snackbar snackbar = Snackbar
-                .make(getView().getRootView(),
+                .make(findViewById(android.R.id.content).getRootView(),
                         str, Snackbar.LENGTH_LONG)
                 .setAction("Try again", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Snackbar snackbar1 = Snackbar.make(getView().getRootView(),
+                        Snackbar snackbar1 = Snackbar.make(findViewById(android.R.id.content).getRootView(),
                                 "Loading...", Snackbar.LENGTH_SHORT);
                         loadPosts(query, page);
                         snackbar1.show();

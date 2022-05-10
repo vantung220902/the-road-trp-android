@@ -2,6 +2,8 @@ package com.example.the_road_trip.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
+import com.example.the_road_trip.activity.MainActivity;
+import com.example.the_road_trip.activity.auth.AnotherActivity;
+import com.example.the_road_trip.activity.post.PostDetailActivity;
 import com.example.the_road_trip.animation.TouchImageView;
 import com.example.the_road_trip.interfaces.IClickPostComment;
 import com.example.the_road_trip.model.Post.Post;
@@ -58,7 +63,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = list.get(position);
-        Glide.with(context).load(post.getImage())
+        String image = post.getImage().split(";")[0];
+        Glide.with(context).load(image)
                 .centerCrop()
                 .into(holder.imagePost);
         Glide.with(context).load(post.getUserId().getAvatar_url())
@@ -68,7 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int day = calendar.get(Calendar.DATE);
         String strTime = day == post.getTime_created() ? "Today" :
-                (day - post.getTime_created()) * -1 + " ago";
+                (day - post.getTime_created()) * 1 + " ago";
         holder.txtTime.setText(strTime);
         holder.tvTitle.setText(post.getTitle());
         holder.btnComment.setOnClickListener(view -> {
@@ -82,9 +88,30 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             checked = !checked;
         });
         holder.imagePost.setOnClickListener(view -> {
-            Intent intent = new Intent(context, DisplayImageActivity.class);
-            intent.putExtra("image",post.getImage());
+            Intent intent = new Intent(context, PostDetailActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("post_item", post);
+            intent.putExtras(bundle);
             context.startActivity(intent);
+        });
+        holder.imageAuthor.setOnClickListener(view -> {
+            Log.d("User",DataLocalManager.getUserCurrent().get_id());
+            if (!post.getUserId().get_id().equals(DataLocalManager.getUserCurrent().get_id())) {
+                Intent intent = new Intent(context, AnotherActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user_item", post.getUserId());
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
+        holder.txtName.setOnClickListener(view -> {
+            if (!post.getUserId().get_id().equals(DataLocalManager.getUserCurrent().get_id())) {
+                Intent intent = new Intent(context, AnotherActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user_item", post.getUserId());
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
         });
     }
 
@@ -94,7 +121,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView  imageAuthor;
+        private ImageView imageAuthor;
         private ImageView imagePost;
         private TextView txtName, txtTime, tvTitle;
         private ImageButton btnComment, btnHeart;

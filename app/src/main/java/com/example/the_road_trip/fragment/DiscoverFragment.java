@@ -23,6 +23,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.activity.MainActivity;
+import com.example.the_road_trip.activity.chat.ChatActivity;
+import com.example.the_road_trip.activity.post.SearchPostActivity;
 import com.example.the_road_trip.activity.story.CreateStoryActivity;
 import com.example.the_road_trip.activity.story.DetailStoryActivity;
 import com.example.the_road_trip.adapter.CommentAdapter;
@@ -67,7 +69,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout containerStory, headingDiscovery;
     private TextView tvLogo, tvName;
-    private ImageButton addStory;
+    private ImageButton addStory,btnSearch,btnChat;
     private NestedScrollView nestedSV;
     private ProgressBar loadingPB;
     private static int y;
@@ -160,6 +162,14 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                 }
             }
         });
+        btnSearch.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), SearchPostActivity.class);
+            startActivity(intent);
+        });
+        btnChat.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), ChatActivity.class);
+            startActivity(intent);
+        });
         return view;
 
     }
@@ -175,6 +185,8 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         addStory = view.findViewById(R.id.add_story);
         nestedSV = view.findViewById(R.id.idNestedSVPost);
         loadingPB = view.findViewById(R.id.idPBLoading);
+        btnSearch = view.findViewById(R.id.btn_search_discovery);
+        btnChat  = view.findViewById(R.id.btn_chat);
     }
 
     public void loadPosts() {
@@ -207,6 +219,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                 SnackbarCustomer(t.getMessage(),0);
             }
         });
+        loadingPB.setVisibility(View.GONE);
     }
 
     public void loadMorePosts() {
@@ -217,7 +230,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                     if (response.code() == 200) {
                         listPost = response.body().getData();
                         if (listPost.size() == 0) {
-                            loadingPB.setVisibility(View.GONE);
+
                             Snackbar snackbar = Snackbar
                                     .make(getView().getRootView(), "Don't have any post",
                                             Snackbar.LENGTH_LONG);
@@ -246,6 +259,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                 SnackbarCustomer(t.getMessage(),0);
             }
         });
+        loadingPB.setVisibility(View.GONE);
     }
 
     public void loadStories() {

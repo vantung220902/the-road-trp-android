@@ -85,8 +85,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_user);
         initUI();
-        editFullName.setHint(DataLocalManager.getUserCurrent().getFullName());
-        editAddress.setHint(DataLocalManager.getUserCurrent().getAddress());
+
         imgBtnUpload.setOnClickListener(view -> {
             onClickRequestPermission();
         });
@@ -221,6 +220,8 @@ public class UpdateUserActivity extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btn_submit_update_user);
         btnClear = findViewById(R.id.btn_clear_all_update_user);
         btnBack = findViewById(R.id.btn_back_update_user);
+        editFullName.setHint(DataLocalManager.getUserCurrent().getFullName());
+        editAddress.setHint(DataLocalManager.getUserCurrent().getAddress());
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait...");
 

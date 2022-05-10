@@ -1,8 +1,11 @@
 package com.example.the_road_trip.activity.post;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +15,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
+import com.example.the_road_trip.adapter.ImageAdapter;
+import com.example.the_road_trip.adapter.ImageStringAdapter;
 import com.example.the_road_trip.api.ApiComments;
 import com.example.the_road_trip.bottomsheet.BottomSheetComment;
 import com.example.the_road_trip.interfaces.IClickPostComment;
@@ -24,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -33,12 +39,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PostDetailActivity extends AppCompatActivity {
-    private ImageView imageAuthor, imagePost;
+    private ImageView imageAuthor;
     private ImageButton btnBack;
     private TextView txtName, txtTime, tvTitle;
     private ImageButton btnComment, btnHeart;
     private boolean checked = true;
     private List<Comment> listComments;
+    private RecyclerView rcvImages;
+    private List<String> list = new ArrayList<>();
+    private ImageStringAdapter imageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +56,23 @@ public class PostDetailActivity extends AppCompatActivity {
         if (getIntent().hasExtra("post_item")) {
             initUI();
             Post post = (Post) getIntent().getExtras().get("post_item");
-            Glide.with(this).load(post.getImage())
-                    .centerCrop()
-                    .into(imagePost);
             Glide.with(this).load(post.getUserId().getAvatar_url())
                     .centerCrop()
                     .into(imageAuthor);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+            rcvImages.setLayoutManager(linearLayoutManager);
+            String strs[] = post.getImage().split(";");
+            for (int i = 0;i<strs.length;i++) {
+                Log.d("images",strs[i]);
+                list.add(strs[i]);
+            }
+            imageAdapter = new ImageStringAdapter(this, list);
+            rcvImages.setAdapter(imageAdapter);
             txtName.setText(post.getUserId().getFullName());
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int day = calendar.get(Calendar.DATE);
-            String strTime = day == post.getTime_created() ? "Today" : day - post.getTime_created() + " ago";
+            String strTime = day == post.getTime_created() ? "Today" :
+                    day - post.getTime_created() + " ago";
             txtTime.setText(strTime);
             tvTitle.setText(post.getTitle());
             btnComment.setOnClickListener(view -> {
@@ -69,11 +85,6 @@ public class PostDetailActivity extends AppCompatActivity {
                     btnHeart.setImageResource(R.drawable.heart);
                 checked = !checked;
             });
-            imagePost.setOnClickListener(view -> {
-                Intent intent = new Intent(this, DisplayImageActivity.class);
-                intent.putExtra("image", post.getImage());
-                startActivity(intent);
-            });
             btnBack.setOnClickListener(view -> {
                 finish();
             });
@@ -82,7 +93,7 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void initUI() {
-        imagePost = findViewById(R.id.img_post_detail);
+        rcvImages = findViewById(R.id.rcv_list_images_post);
         imageAuthor = findViewById(R.id.image_author_post_detail);
         btnHeart = findViewById(R.id.heart_post_detail);
         btnComment = findViewById(R.id.comment_post_detail);

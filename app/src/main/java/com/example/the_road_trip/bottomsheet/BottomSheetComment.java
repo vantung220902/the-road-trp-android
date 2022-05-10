@@ -83,7 +83,6 @@ public class BottomSheetComment extends BottomSheetDialogFragment {
                 enqueue(new Callback<ResponseInsertComment>() {
                     @Override
                     public void onResponse(Call<ResponseInsertComment> call, Response<ResponseInsertComment> response) {
-                        Log.d("Response",response.toString());
                         progressDialog.dismiss();
                         if (response.code() == 200) {
                             if (response.body().getSuccessful()) {
@@ -99,7 +98,6 @@ public class BottomSheetComment extends BottomSheetDialogFragment {
                     public void onFailure(Call<ResponseInsertComment> call, Throwable t) {
                         progressDialog.dismiss();
                         Toast.makeText(getContext(), "Call Api Fail", Toast.LENGTH_SHORT).show();
-                        Log.d("Error",t.getMessage());
                     }
                 });
     }

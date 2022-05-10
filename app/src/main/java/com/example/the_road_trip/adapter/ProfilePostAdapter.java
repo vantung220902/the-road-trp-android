@@ -49,7 +49,8 @@ public class ProfilePostAdapter extends RecyclerView.Adapter<ProfilePostAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = list.get(position);
-        Glide.with(context).load(post.getImage())
+        String image = post.getImage().split(";")[0];
+        Glide.with(context).load(image)
                 .into(holder.imageView);
         holder.imageView.setOnClickListener(view -> {
             Intent intent = new Intent(context, PostDetailActivity.class);

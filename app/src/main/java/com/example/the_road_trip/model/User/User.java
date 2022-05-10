@@ -39,7 +39,12 @@ public class User extends ResponseData implements Serializable {
         this.address = address;
         this.avatar_url = avatar_url;
     }
-
+    public User(String _id, String fullName, String avatar_url,String address) {
+        this._id = _id;
+        this.fullName = fullName;
+        this.address = address;
+        this.avatar_url = avatar_url;
+    }
     public User(String email, String password, String fullName) {
         this.email = email;
         this.password = password;

@@ -18,6 +18,7 @@
             android:background="@drawable/background_main">
 
             <FrameLayout
+                android:id="@+id/frameLayout2"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="28dp"
@@ -107,6 +108,7 @@
                 app:layout_constraintTop_toTopOf="@+id/container_story" />
 
             <FrameLayout
+                android:id="@+id/frameLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -115,7 +117,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/imageView"
+                    android:id="@+id/btn_chat"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginTop="16dp"
@@ -144,6 +146,17 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
                 tools:layout_editor_absoluteX="16dp" />
+
+            <ImageButton
+                android:id="@+id/btn_search_discovery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="228dp"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@android:color/transparent"
+                app:layout_constraintStart_toStartOf="@+id/frameLayout2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/search" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

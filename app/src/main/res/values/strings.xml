@@ -26,4 +26,8 @@
     <string name="add">Add</string>
     <string name="track">Track</string>
     <string name="manage">manage</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="remove_friend">Unfriend</string>
+    <string name="remove_invite">Remove Invite</string>
+    <string name="search_chat">Search Friend</string>
 </resources>

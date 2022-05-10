@@ -173,7 +173,7 @@ public class TrashPostActivity extends AppCompatActivity {
 
     private void delete(int position) {
         dialog.setPositiveButton("Yes", (dialogInterface, i)
-                -> APIPost.apiPOST.recovery(list.get(position).get_id()).enqueue(new Callback<ResponseData>() {
+                -> APIPost.apiPOST.deleted(list.get(position).get_id()).enqueue(new Callback<ResponseData>() {
             @Override
             public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
                 try {
