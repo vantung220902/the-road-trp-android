@@ -34,6 +34,7 @@ import com.example.the_road_trip.animation.ExpandedCollapse;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.api.APIStory;
 import com.example.the_road_trip.api.ApiComments;
+import com.example.the_road_trip.api.Constant;
 import com.example.the_road_trip.bottomsheet.BottomSheetComment;
 import com.example.the_road_trip.interfaces.IClickPostComment;
 import com.example.the_road_trip.interfaces.IClickStory;
@@ -51,9 +52,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,18 +74,30 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout containerStory, headingDiscovery;
     private TextView tvLogo, tvName;
-    private ImageButton addStory,btnSearch,btnChat;
+    private ImageButton addStory, btnSearch, btnChat;
     private NestedScrollView nestedSV;
     private ProgressBar loadingPB;
     private static int y;
     private int page = 0;
     private String postPre = "";
+    private Socket mSocket;
+
+    {
+        try {
+            mSocket = IO.socket(Constant.URL_SERVER);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
         initUI(view);
+        mSocket.connect();
+        mSocket.emit("join_room", "Post");
+        mSocket.on("receive_post", onNewPost);
         tvName.setText(DataLocalManager.getUserCurrent().getFullName());
         swipeRefreshLayout.setOnRefreshListener(this);
         postAdapter = new PostAdapter(listPost, getContext(), new IClickPostComment() {
@@ -155,6 +172,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+
                             loadMorePosts();
                         }
                     }, 1000);
@@ -168,11 +186,31 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
         btnChat.setOnClickListener(view1 -> {
             Intent intent = new Intent(getContext(), ChatActivity.class);
+
             startActivity(intent);
         });
         return view;
 
     }
+
+    private Emitter.Listener onNewPost = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JSONObject data = (JSONObject) args[0];
+                    String message = data.optString("data");
+                    if(message.equals("Post")){
+                        loadPosts();
+                    }else{
+                        loadStories();
+                    }
+
+                }
+            });
+        }
+    };
 
     private void initUI(View view) {
         recyclerView = view.findViewById(R.id.rcv_story);
@@ -186,7 +224,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         nestedSV = view.findViewById(R.id.idNestedSVPost);
         loadingPB = view.findViewById(R.id.idPBLoading);
         btnSearch = view.findViewById(R.id.btn_search_discovery);
-        btnChat  = view.findViewById(R.id.btn_chat);
+        btnChat = view.findViewById(R.id.btn_chat);
     }
 
     public void loadPosts() {
@@ -202,21 +240,21 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            SnackbarCustomer(internalMessage,0);
+                            SnackbarCustomer(internalMessage, 0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    SnackbarCustomer(e.getMessage(),0);
+                    SnackbarCustomer(e.getMessage(), 0);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponsePost> call, Throwable t) {
                 Log.d("Error Call Api", t.getMessage());
-                SnackbarCustomer(t.getMessage(),0);
+                SnackbarCustomer(t.getMessage(), 0);
             }
         });
         loadingPB.setVisibility(View.GONE);
@@ -242,21 +280,21 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            SnackbarCustomer(internalMessage,0);
+                            SnackbarCustomer(internalMessage, 0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    SnackbarCustomer(e.getMessage(),0);
+                    SnackbarCustomer(e.getMessage(), 0);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponsePost> call, Throwable t) {
                 Log.d("Error Call Api", t.getMessage());
-                SnackbarCustomer(t.getMessage(),0);
+                SnackbarCustomer(t.getMessage(), 0);
             }
         });
         loadingPB.setVisibility(View.GONE);
@@ -275,20 +313,20 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            SnackbarCustomer(internalMessage,2);
+                            SnackbarCustomer(internalMessage, 2);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
-                    SnackbarCustomer(e.getMessage(),1);
+                    SnackbarCustomer(e.getMessage(), 1);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseStory> call, Throwable t) {
-                SnackbarCustomer(t.getMessage(),1);
+                SnackbarCustomer(t.getMessage(), 1);
                 Log.d("Error Call Api", t.getMessage());
             }
         });
@@ -307,20 +345,20 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
                         try {
                             jsonObject = new JSONObject(response.errorBody().string());
                             String internalMessage = jsonObject.getString("message");
-                            SnackbarCustomer(internalMessage,2);
+                            SnackbarCustomer(internalMessage, 2);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 } catch (Exception e) {
-                    SnackbarCustomer(e.getMessage(),2);
+                    SnackbarCustomer(e.getMessage(), 2);
                     e.printStackTrace();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseComment> call, Throwable t) {
-                SnackbarCustomer(t.getMessage(),2);
+                SnackbarCustomer(t.getMessage(), 2);
                 Log.d("Error Call Api", t.getMessage());
             }
         });
@@ -341,7 +379,7 @@ public class DiscoverFragment extends Fragment implements SwipeRefreshLayout.OnR
         }, 2000);
     }
 
-    private void  clickOpenBottomSheetFragment(List<Comment> list, String postId) {
+    private void clickOpenBottomSheetFragment(List<Comment> list, String postId) {
         BottomSheetComment bottomSheetComment = new BottomSheetComment(list, postId);
         bottomSheetComment.show(getActivity().getSupportFragmentManager(), bottomSheetComment.getTag());
     }

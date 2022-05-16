@@ -1,6 +1,7 @@
 package com.example.the_road_trip.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.model.Chat.Chat;
 import com.example.the_road_trip.model.Chat.MessageModel;
+import com.example.the_road_trip.model.User.User;
+import com.example.the_road_trip.shared_preference.DataLocalManager;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -24,26 +27,32 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Context context;
     List<Chat> list;
+    private User receiver;
     public static final int MESSAGE_TYPE_IN = 1;
     public static final int MESSAGE_TYPE_OUT = 2;
 
-    public ChatAdapter(Context context, List<Chat> list) { // you can pass other parameters in constructor
+    public ChatAdapter(Context context, List<Chat> list, User receiver) { // you can pass other parameters in constructor
         this.context = context;
         this.list = list;
+        this.receiver = receiver;
     }
-    public void setData(List<Chat> list){
+
+    public void setData(List<Chat> list) {
         this.list = list;
         notifyDataSetChanged();
     }
 
     private class MessageInViewHolder extends RecyclerView.ViewHolder {
 
-        TextView messageTV, dateTV;
+        TextView messageTV, dateTV,tvName;
+        CircleImageView circleImageView;
 
         MessageInViewHolder(final View itemView) {
             super(itemView);
             messageTV = itemView.findViewById(R.id.message_text);
             dateTV = itemView.findViewById(R.id.date_text);
+            circleImageView = itemView.findViewById(R.id.avatar_message);
+            tvName = itemView.findViewById(R.id.text_name);
         }
 
         void bind(int position) {
@@ -52,18 +61,19 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int house = calendar.get(Calendar.HOUR);
             dateTV.setText(house + "house");
+            tvName.setText(receiver.getFullName());
+            Glide.with(context).load(receiver.getAvatar_url()).into(circleImageView);
+
         }
     }
 
     private class MessageOutViewHolder extends RecyclerView.ViewHolder {
         TextView messageTV, dateTV;
-        CircleImageView circleImageView;
 
         MessageOutViewHolder(final View itemView) {
             super(itemView);
             messageTV = itemView.findViewById(R.id.message_text);
             dateTV = itemView.findViewById(R.id.date_text);
-            circleImageView = itemView.findViewById(R.id.avatar_message);
         }
 
         void bind(int position) {
@@ -71,11 +81,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             messageTV.setText(chat.getBody());
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             int house = calendar.get(Calendar.HOUR);
-            dateTV.setText(house + "house");
-            Glide.with(context).load(chat.getReceiver().getAvatar_url())
-                    .centerCrop()
-                    .into(circleImageView);
-
+            dateTV.setText(house + " house");
         }
     }
 

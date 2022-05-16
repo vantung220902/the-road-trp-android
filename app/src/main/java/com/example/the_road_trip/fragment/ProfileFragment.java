@@ -26,6 +26,7 @@ import com.example.the_road_trip.activity.MainActivity;
 import com.example.the_road_trip.activity.SplashActivity;
 import com.example.the_road_trip.activity.auth.UpdateUserActivity;
 import com.example.the_road_trip.activity.post.ManagePostActivity;
+import com.example.the_road_trip.activity.ticket.ManagePaymentActivity;
 import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.adapter.ViewPagerProfileAdapter;
 import com.example.the_road_trip.api.APIPost;
@@ -57,7 +58,7 @@ public class ProfileFragment extends Fragment {
     private ViewPagerProfileAdapter viewPagerProfileAdapter;
     private TextView txtName, txtAddress, tvNumberPost;
     private ImageButton btnLogout;
-    private MaterialButton btnEditProfile;
+    private MaterialButton btnEditProfile,btn_event;
     private NestedScrollView nestedSV;
     private ProgressBar loadingPB;
     private MaterialButton btnManagePost;
@@ -138,6 +139,11 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
             getActivity().finish();
         });
+        btn_event.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getContext(), ManagePaymentActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        });
         return view;
     }
 
@@ -146,6 +152,7 @@ public class ProfileFragment extends Fragment {
         txtAddress = view.findViewById(R.id.profile_address);
         txtName = view.findViewById(R.id.profile_name);
         btnLogout = view.findViewById(R.id.logout_profile);
+        btn_event = view.findViewById(R.id.btn_event);
         btnEditProfile = view.findViewById(R.id.edit_profile);
         tabLayout = view.findViewById(R.id.tab_layout_profile);
         viewPager2 = view.findViewById(R.id.view_pager_profile);

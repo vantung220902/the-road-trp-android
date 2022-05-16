@@ -12,12 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
-import com.example.the_road_trip.model.Chat.Chat;
 import com.example.the_road_trip.model.Friend.Inviting;
+import com.example.the_road_trip.model.User.User;
+import com.example.the_road_trip.shared_preference.DataLocalManager;
 
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,10 +24,12 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
     private List<Inviting> list;
     private Context mContext;
     private IClickChat iClickChat;
-    public interface  IClickChat{
-        void clickChat(String receiver);
+
+    public interface IClickChat {
+        void clickChat(User receiver);
     }
-    public FriendAdapter(List<Inviting> list, Context mContext,IClickChat iClickChat) {
+
+    public FriendAdapter(List<Inviting> list, Context mContext, IClickChat iClickChat) {
         this.list = list;
         this.mContext = mContext;
         this.iClickChat = iClickChat;
@@ -50,14 +51,26 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Inviting inviting = list.get(position);
         if (inviting == null) return;
-        Glide.with(mContext).load(inviting.getSender().getAvatar_url())
-                .centerCrop()
-                .into(holder.avatar);
-        holder.tvName.setText(inviting.getSender().getFullName());
-        holder.tvAddress.setText(inviting.getSender().getAddress());
-        holder.btnMessage.setOnClickListener(view -> {
-            iClickChat.clickChat(inviting.getReceiver());
-        });
+        if (inviting.getSender().get_id().equals(DataLocalManager.getUserCurrent().get_id())) {
+            Glide.with(mContext).load(inviting.getReceiver().getAvatar_url())
+                    .centerCrop()
+                    .into(holder.avatar);
+            holder.tvName.setText(inviting.getReceiver().getFullName());
+            holder.tvAddress.setText(inviting.getReceiver().getAddress());
+            holder.btnMessage.setOnClickListener(view -> {
+                iClickChat.clickChat(inviting.getReceiver());
+            });
+        } else {
+            Glide.with(mContext).load(inviting.getSender().getAvatar_url())
+                    .centerCrop()
+                    .into(holder.avatar);
+            holder.tvName.setText(inviting.getSender().getFullName());
+            holder.tvAddress.setText(inviting.getSender().getAddress());
+            holder.btnMessage.setOnClickListener(view -> {
+                iClickChat.clickChat(inviting.getSender());
+            });
+        }
+
     }
 
     @Override

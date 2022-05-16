@@ -38,17 +38,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:orientation="horizontal">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/comment_avatar_add"
-                android:layout_width="50dp"
-                android:layout_height="50dp" />
-
             <EditText
                 android:id="@+id/edit_add_message"
-                android:layout_width="200dp"
+                android:layout_width="250dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="10dp"
                 android:textColorHint="@color/black" />
@@ -69,5 +63,10 @@
         android:layout_height="fill_parent"
         android:layout_above="@id/footer"
         android:layout_marginTop="50dp" />
+    <ProgressBar
+        android:id="@+id/idPBLoadingProfileChats"
+        android:layout_width="match_parent"
+        android:layout_above="@id/footer"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

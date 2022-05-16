@@ -4,13 +4,13 @@ import com.example.the_road_trip.model.User.User;
 
 public class Chat {
     private String _id;
-    private String sender;
+    private User sender;
     private User receiver;
     private int messageType;
     private String body;
     private int time_created;
 
-    public Chat(String _id, int time_created, String sender, User receiver,String body,int messageType) {
+    public Chat(String _id, int time_created, User sender, User receiver,String body,int messageType) {
         this._id = _id;
         this.time_created = time_created;
         this.sender = sender;
@@ -23,7 +23,11 @@ public class Chat {
         this.body = body;
         this.receiver = receiver;
     }
-
+    public Chat(String body,User receiver,int time_created) {
+        this.body = body;
+        this.receiver = receiver;
+        this.time_created = time_created;
+    }
     public String get_id() {
         return _id;
     }
@@ -40,11 +44,11 @@ public class Chat {
         this.time_created = time_created;
     }
 
-    public String getSender() {
+    public User getSender() {
         return sender;
     }
 
-    public void setSender(String sender) {
+    public void setSender(User sender) {
         this.sender = sender;
     }
 

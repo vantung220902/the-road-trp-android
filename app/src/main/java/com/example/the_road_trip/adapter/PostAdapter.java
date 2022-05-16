@@ -47,9 +47,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     public void loadMore(List<Post> list) {
-        for (Post post : list) {
+        for (Post post : list)
             this.list.add(post);
-        }
+
         notifyDataSetChanged();
     }
 
@@ -63,7 +63,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = list.get(position);
-        String image = post.getImage().split(";")[0];
+        if (post == null) return;
+        String array[] = post.getImage().split(";");
+        String image = array[0];
+        holder.tvNumber.setText("1/"+array.length + "");
         Glide.with(context).load(image)
                 .centerCrop()
                 .into(holder.imagePost);
@@ -95,7 +98,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             context.startActivity(intent);
         });
         holder.imageAuthor.setOnClickListener(view -> {
-            Log.d("User",DataLocalManager.getUserCurrent().get_id());
+            Log.d("User", DataLocalManager.getUserCurrent().get_id());
             if (!post.getUserId().get_id().equals(DataLocalManager.getUserCurrent().get_id())) {
                 Intent intent = new Intent(context, AnotherActivity.class);
                 Bundle bundle = new Bundle();
@@ -123,7 +126,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageAuthor;
         private ImageView imagePost;
-        private TextView txtName, txtTime, tvTitle;
+        private TextView txtName, txtTime, tvTitle, tvNumber;
         private ImageButton btnComment, btnHeart;
 
         public ViewHolder(@NonNull View itemView) {
@@ -135,6 +138,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             txtName = itemView.findViewById(R.id.name_author_post);
             txtTime = itemView.findViewById(R.id.time_create_post);
             tvTitle = itemView.findViewById(R.id.post_title);
+            tvNumber = itemView.findViewById(R.id.tv_number_image);
         }
     }
 }

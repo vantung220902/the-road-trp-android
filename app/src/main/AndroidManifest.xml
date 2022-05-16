@@ -18,6 +18,18 @@
         android:theme="@style/Theme.TheRoadTrip"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.ticket.QRActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ticket.ManagePaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ticket.PaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ticket.DetailTicketActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.chat.DetailChatActivity"
             android:exported="false" />
         <activity

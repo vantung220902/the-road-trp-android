@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +20,7 @@ import com.example.the_road_trip.utils.DisplayImageActivity;
 
 import java.util.List;
 
-public class ImageStringAdapter extends RecyclerView.Adapter<ImageStringAdapter.ViewHolder>{
+public class ImageStringAdapter extends RecyclerView.Adapter<ImageStringAdapter.ViewHolder> {
     private List<String> list;
     private Context mContext;
 
@@ -44,12 +45,13 @@ public class ImageStringAdapter extends RecyclerView.Adapter<ImageStringAdapter.
     public void onBindViewHolder(@NonNull ImageStringAdapter.ViewHolder holder, int position) {
         String str = list.get(position);
         if (str == null) return;
+        holder.textView.setText(position + 1 + "");
         Glide.with(mContext).load(str)
                 .centerCrop()
                 .into(holder.image);
         holder.image.setOnClickListener(view -> {
             Intent intent = new Intent(mContext, DisplayImageActivity.class);
-            intent.putExtra("image",str);
+            intent.putExtra("image", str);
             mContext.startActivity(intent);
         });
     }
@@ -61,11 +63,12 @@ public class ImageStringAdapter extends RecyclerView.Adapter<ImageStringAdapter.
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView image;
+        private TextView textView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image_item);
-
+            textView = itemView.findViewById(R.id.item_number_image);
         }
     }
 }

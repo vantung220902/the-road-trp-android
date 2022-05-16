@@ -41,7 +41,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -57,6 +60,16 @@ public class CreateStoryActivity extends AppCompatActivity {
     private MaterialButton btnSubmit, btnClear;
     private ProgressDialog progressDialog;
     private ImageButton btnBack;
+    private Socket mSocket;
+
+    {
+        try {
+            mSocket = IO.socket(Constant.URL_SERVER);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
     ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
                 @Override
@@ -83,6 +96,8 @@ public class CreateStoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_story);
         initUI();
+        mSocket.connect();
+        mSocket.emit("join_room", "Post");
         imgBtnUpload.setOnClickListener(view -> {
             onClickRequestPermission();
         });
@@ -172,6 +187,7 @@ public class CreateStoryActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                         if (response.code() == 200) {
                             if (response.body().getSuccessful()) {
+                                mSocket.emit("send_post", "Story");
                                 Snackbar snackbar = Snackbar
                                         .make(findViewById(android.R.id.content).getRootView(),
                                                 response.body().getMessage(), Snackbar.LENGTH_LONG);
@@ -198,6 +214,7 @@ public class CreateStoryActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void SnackbarCustomer(String str) {
         Snackbar snackbar = Snackbar
                 .make(findViewById(android.R.id.content).getRootView(),

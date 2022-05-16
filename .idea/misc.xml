@@ -9,6 +9,7 @@
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/border_edit.xml" value="0.1475" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/border_radius.xml" value="0.1415" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/border_story.xml" value="0.1415" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/btn_outline.xml" value="0.1415" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/button_border.xml" value="0.1565" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/icon_back.xml" value="0.1475" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/drawable/textview.xml" value="0.1415" />
@@ -19,22 +20,27 @@
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_create.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_create_post.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_create_story.xml" value="0.21944444444444444" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_detail.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_detail_chat.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_detail_story.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_display_image.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_first_install.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_manage_payment.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_manage_post.xml" value="0.264" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_notifications.xml" value="0.25" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_payment.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_post_detail.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_profile.xml" value="0.25" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_qractivity.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_register.xml" value="0.20277777777777778" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_search_post.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_shopping.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_shpping.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_splash.xml" value="0.25" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_ticket_detail.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_trash_post.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_update_pots.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/activity_update_user.xml" value="0.25" />
@@ -58,12 +64,15 @@
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_chats.xml" value="0.264" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_image.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_inviting.xml" value="0.25" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_payment.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_post.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_post_profile.xml" value="0.2359375" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_reiceiver.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_sender.xml" value="0.25" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_slide.xml" value="0.2359375" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_text_in.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_text_out.xml" value="0.25" />
+        <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/item_ticket.xml" value="0.2359375" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/left_message.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/right_message.xml" value="0.25" />
         <entry key="..\:/Android/Tutorial/TheRoadTrip/app/src/main/res/layout/story_item.xml" value="0.25" />

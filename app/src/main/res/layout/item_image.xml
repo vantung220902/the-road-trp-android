@@ -1,12 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/image_item"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="490dp"
-    android:layout_gravity="center_horizontal"
-    android:layout_marginEnd="4dp"
-    android:layout_marginBottom="10dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:scaleType="fitXY"
-    android:src="@drawable/background" />
+    android:layout_height="490dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/image_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/item_number_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_margin="10dp"
+            android:background="@color/pink_border"
+            android:padding="5dp"
+            android:textColor="@color/blue"
+            android:textSize="20sp" />
+    </FrameLayout>
+</LinearLayout>
+

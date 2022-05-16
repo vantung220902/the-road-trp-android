@@ -5,10 +5,10 @@ import com.example.the_road_trip.model.User.User;
 public class Inviting {
     private String _id;
     private User sender;
-    private String receiver;
+    private User receiver;
     private int status;
     private int time_created;
-    public Inviting(String _id, User sender, String receiver, int status,int time_created) {
+    public Inviting(String _id, User sender, User receiver, int status,int time_created) {
         this._id = _id;
         this.sender = sender;
         this.receiver = receiver;
@@ -32,11 +32,11 @@ public class Inviting {
         this.sender = sender;
     }
 
-    public String getReceiver() {
+    public User getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(String receiver) {
+    public void setReceiver(User receiver) {
         this.receiver = receiver;
     }
 

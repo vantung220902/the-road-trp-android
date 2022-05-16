@@ -1,25 +1,23 @@
-package com.example.the_road_trip.activity.chat;
+package com.example.the_road_trip.activity.ticket;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.the_road_trip.R;
-import com.example.the_road_trip.adapter.FriendAdapter;
-import com.example.the_road_trip.api.ApiFriend;
-import com.example.the_road_trip.model.Chat.Chat;
-import com.example.the_road_trip.model.Friend.Inviting;
-import com.example.the_road_trip.model.Friend.ResponseInviting;
-import com.example.the_road_trip.model.User.User;
+import com.example.the_road_trip.adapter.PaymentAdapter;
+import com.example.the_road_trip.api.ApiComments;
+import com.example.the_road_trip.api.ApiPayment;
+import com.example.the_road_trip.model.Comment.ResponseComment;
+import com.example.the_road_trip.model.Payment.Payment;
+import com.example.the_road_trip.model.Payment.ResponsePayments;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,52 +29,40 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ChatActivity extends AppCompatActivity {
-    private NestedScrollView nestedSV;
-    private ProgressBar loadingPB;
-    private RecyclerView recyclerView;
-    private TextView tvEmpty;
-    private int page = 0;
-    private FriendAdapter chatAdapter;
-    private List<Inviting> list = new ArrayList<>();
+public class ManagePaymentActivity extends AppCompatActivity {
+    private List<Payment> list = new ArrayList<>();
+    private RecyclerView rcv;
+    private PaymentAdapter paymentAdapter;
+    private MaterialButton btnLoadMore, btnToTicket;
+    private TextInputEditText editSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_manage_payment);
         initUI();
-        loadChats();
+        loadPayments();
     }
 
     private void initUI() {
-        nestedSV = findViewById(R.id.idNestedSVChat);
-        loadingPB = findViewById(R.id.idPBLoadingRcvChat);
-        recyclerView = findViewById(R.id.rcv_chat);
-        tvEmpty = findViewById(R.id.chats_empty);
-        chatAdapter = new FriendAdapter(list, this, new FriendAdapter.IClickChat() {
-            @Override
-            public void clickChat(User receiver) {
-                Intent intent = new Intent(ChatActivity.this,DetailChatActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("obj_receiver",receiver);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-        });
+        rcv = findViewById(R.id.rcv_manage_payment);
+        btnLoadMore = findViewById(R.id.btn_load_payment);
+        btnToTicket = findViewById(R.id.btn_to_ticket);
+        editSearch = findViewById(R.id.edit_search_manage_payment);
+        paymentAdapter = new PaymentAdapter(list, this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(chatAdapter);
+        rcv.setLayoutManager(linearLayoutManager);
+        rcv.setAdapter(paymentAdapter);
     }
 
-    public void loadChats() {
-        ApiFriend.apiFriend.friends().enqueue(new Callback<ResponseInviting>() {
+    public void loadPayments() {
+        ApiPayment.apiPayment.gets().enqueue(new Callback<ResponsePayments>() {
             @Override
-            public void onResponse(Call<ResponseInviting> call, Response<ResponseInviting> response) {
+            public void onResponse(Call<ResponsePayments> call, Response<ResponsePayments> response) {
                 try {
                     if (response.code() == 200) {
                         list = response.body().getData();
-                        chatAdapter.setData(list);
-                        if (list.size() == 0 || list == null) tvEmpty.setVisibility(View.VISIBLE);
+                        paymentAdapter.setData(list);
                     } else {
                         JSONObject jsonObject = null;
                         try {
@@ -88,18 +74,17 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     SnackbarCustomer(e.getMessage());
+                    e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Call<ResponseInviting> call, Throwable t) {
-                Log.d("Error Call Api", t.getMessage());
+            public void onFailure(Call<ResponsePayments> call, Throwable t) {
                 SnackbarCustomer(t.getMessage());
+                Log.d("Error Call Api", t.getMessage());
             }
         });
-        loadingPB.setVisibility(View.GONE);
     }
 
     private void SnackbarCustomer(String str) {
@@ -111,10 +96,11 @@ public class ChatActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Snackbar snackbar1 = Snackbar.make(findViewById(android.R.id.content).getRootView(),
                                 "Loading...", Snackbar.LENGTH_SHORT);
-                        loadChats();
+                        loadPayments();
                         snackbar1.show();
                     }
                 });
         snackbar.show();
     }
+
 }

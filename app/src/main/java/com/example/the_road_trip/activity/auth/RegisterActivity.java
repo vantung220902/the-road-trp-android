@@ -92,7 +92,6 @@ public class RegisterActivity extends AppCompatActivity {
         String strPassword = editPassword.getText().toString();
         String strFullName = editFullName.getText().toString();
         User user = new User(strEmail, strPassword, strFullName);
-
         ApiAuth.apiAuth.registerUser(user).enqueue(new Callback<ResponseData>() {
             @Override
             public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {

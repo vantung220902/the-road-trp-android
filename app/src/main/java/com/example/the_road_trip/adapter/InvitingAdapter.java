@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.example.the_road_trip.R;
 import com.example.the_road_trip.model.Friend.Inviting;
@@ -23,8 +24,9 @@ public class InvitingAdapter extends RecyclerView.Adapter<InvitingAdapter.ViewHo
     private List<Inviting> list;
     private Context mContext;
     private ICLickInviting icLickInviting;
-    public interface ICLickInviting{
-        void actions(String _id,int status);
+
+    public interface ICLickInviting {
+        void actions(String _id, int status);
     }
 
     public InvitingAdapter(List<Inviting> list, Context mContext, ICLickInviting icLickInviting) {
@@ -54,14 +56,13 @@ public class InvitingAdapter extends RecyclerView.Adapter<InvitingAdapter.ViewHo
         holder.tvName.setText(inviting.getSender().getFullName());
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         int day = calendar.get(Calendar.DATE);
-        String strTime = day == inviting.getTime_created() ? "Today" :
-                (day - inviting.getTime_created()) * -1 + " ago";
-        holder.tvTime.setText(strTime);
+        int month = calendar.get(Calendar.MONTH);
+        holder.tvTime.setText(day + "/" + month + "/2022");
         holder.btnAccept.setOnClickListener(view -> {
-            icLickInviting.actions(inviting.get_id(),1);
+            icLickInviting.actions(inviting.get_id(), 1);
         });
         holder.btnDecline.setOnClickListener(view -> {
-            icLickInviting.actions(inviting.get_id(),0);
+            icLickInviting.actions(inviting.get_id(), 0);
         });
 
     }

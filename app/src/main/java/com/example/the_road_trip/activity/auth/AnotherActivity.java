@@ -18,6 +18,7 @@ import com.example.the_road_trip.adapter.ProfilePostAdapter;
 import com.example.the_road_trip.adapter.ViewPagerProfileAdapter;
 import com.example.the_road_trip.api.APIPost;
 import com.example.the_road_trip.api.ApiFriend;
+import com.example.the_road_trip.api.Constant;
 import com.example.the_road_trip.model.Friend.Friend;
 import com.example.the_road_trip.model.Friend.StatusFriend;
 import com.example.the_road_trip.model.Post.Post;
@@ -33,9 +34,12 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.socket.client.IO;
+import io.socket.client.Socket;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,12 +59,21 @@ public class AnotherActivity extends AppCompatActivity {
     private User user;
     private int status = -1;
     private String id = "";
-
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket(Constant.URL_SERVER);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_another);
         user = (User) getIntent().getExtras().get("user_item");
+        mSocket.connect();
+        mSocket.emit("join_room","Inviting");
         initUI();
         getStatus();
         loadPosts();
@@ -254,6 +267,9 @@ public class AnotherActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseData> call, Response<ResponseData> response) {
                 try {
                     if (response.code() == 200) {
+                        if(status==-1){
+                            mSocket.emit("send_inviting", receiver);
+                        }
                         status++;
                         if (status >= 1) status = -1;
                         changeBtnFriend(status);

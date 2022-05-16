@@ -46,12 +46,15 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -70,7 +73,14 @@ public class CreatePostFragment extends Fragment {
     private ProgressDialog progressDialog;
     private IUpdatePosts iUpdatePosts;
     private ImageAdapter imageAdapter;
-
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket(Constant.URL_SERVER);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
     public interface IUpdatePosts {
         void updateData();
     }
@@ -101,6 +111,8 @@ public class CreatePostFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View viewContainer = inflater.inflate(R.layout.fragment_create_post, container, false);
         initUI(viewContainer);
+        mSocket.connect();
+        mSocket.emit("join_room","Post");
         imageAdapter = new ImageAdapter(getContext(), mUri);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rcvImagePreviews.setLayoutManager(linearLayoutManager);
@@ -198,6 +210,7 @@ public class CreatePostFragment extends Fragment {
                         progressDialog.dismiss();
                         if (response.code() == 200) {
                             if (response.body().getSuccessful()) {
+                                mSocket.emit("send_post", "Post");
                                 Snackbar snackbar = Snackbar
                                         .make(getView().getRootView(), response.body().getMessage(), Snackbar.LENGTH_LONG);
                                 snackbar.show();

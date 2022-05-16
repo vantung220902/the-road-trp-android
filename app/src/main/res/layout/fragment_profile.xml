@@ -187,6 +187,7 @@
                 app:cornerRadius="10dp" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_event"
                 android:layout_width="140dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/black"

@@ -88,6 +88,7 @@
         android:layout_marginStart="16dp"
         android:orientation="vertical"
         android:paddingBottom="30dp">
+
         <TextView
             android:id="@+id/post_title"
             android:layout_width="wrap_content"
@@ -103,12 +104,29 @@
         android:layout_height="490dp"
         app:cardCornerRadius="30dp">
 
-        <ImageView
-            android:id="@+id/img_post_item"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:focusable="true"
-            android:scaleType="fitXY" />
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/img_post_item"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/tv_number_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="@color/pink_border"
+                android:padding="5dp"
+                android:layout_margin="10dp"
+                android:text="1/3"
+                android:textColor="@color/blue"
+                android:textSize="20sp" />
+        </FrameLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>
